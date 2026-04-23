@@ -1,0 +1,25 @@
+---
+title: "Embeddings"
+description: "Embeddings explains the responsibility boundary around `openai/embeddings`."
+order: 360
+---
+
+# Embeddings
+
+Embeddings explains the responsibility boundary around `openai/embeddings`.
+## What This Area Does
+Embeddings describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+The behavior is inferred from named inputs and mappings in the implementation, so this page stays conservative until richer usage examples are available.
+
+## Behavior Notes
+- Recognizes package markers such as `at`, `message`, `type`, `role`, `finishReason`, `endpoint`, `path`, `providerId`.
+- Normalizes inputs to values such as `at` -> `openai.embedding.map.inputMissing`, `message` -> `Failed to map OpenAI Embedding request`, `at` -> `openai.embedding.mapToRequest`, `type` -> `message`, `role` -> `assistant`, `type` -> `embedding`, `finishReason` -> `stop`, `at` -> `openai.generate.mapRequest`, and more.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Embeddings page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.

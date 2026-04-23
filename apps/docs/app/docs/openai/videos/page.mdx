@@ -1,0 +1,25 @@
+---
+title: "Videos"
+description: "Videos explains the responsibility boundary around `openai/videos`."
+order: 410
+---
+
+# Videos
+
+Videos explains the responsibility boundary around `openai/videos`.
+## What This Area Does
+Videos describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+The behavior is inferred from named inputs and mappings in the implementation, so this page stays conservative until richer usage examples are available.
+
+## Behavior Notes
+- Recognizes package markers such as `other`, `at`, `provider`, `message`, `type`, `role`, `kind`, `code`.
+- Normalizes inputs to values such as `other` -> `stop`, `at` -> `openai.videos.map.inputLimit`, `at` -> `openai.videos.map.inputMissing`, `provider` -> `openai`, `at` -> `openai.videos.map.inputReferenceUrlUnsupported`, `at` -> `openai.videos.map.invalidInputItem`, `at` -> `openai.videos.map.promptMissing`, `message` -> `Failed to map OpenAI Videos request`, and more.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Videos page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.

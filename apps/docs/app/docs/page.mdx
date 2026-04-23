@@ -1,0 +1,107 @@
+---
+title: "Better Agent"
+description: "Overview for Better Agent."
+order: 0
+---
+
+# Better Agent
+
+Better Agent is in beta. APIs may change as the project evolves. If you run into issues, please open an issue.
+## Product Story
+Better Agent is documented as a product with capabilities, workflows, configuration decisions, and integration surfaces. These pages are organized so a reader can understand the purpose of the project before they need to inspect source files.
+## Reader Paths
+- Start with the overview, quickstart, and installation pages to understand the product before moving into deeper setup details.
+- Use feature pages to understand product capabilities surfaced by the README, routes, UI, or domain files.
+- Use self-hosting pages when deciding how this project fits into a framework, server, or deployment environment.
+- Use configuration pages for runtime settings, environment files, deployment files, database files, or product config.
+- Use guides for task-oriented workflows such as CLI usage, local development, troubleshooting, or product-specific operations.
+- Use API reference pages after the mental model is clear and you need routes, commands, adapters, exports, or type contracts.
+## Documentation Model
+Each page answers four questions: what the concept is, when to use it, how a developer or operator completes the workflow, and what to verify next. File paths and exports are supporting context, not the main explanation.
+## Documentation Map
+- Get Started: [Better Agent](/docs) - Overview for Better Agent.
+- Get Started: [Quickstart](/docs/quickstart) - Run Better Agent for the first time.
+- Get Started: [Installation](/docs/installation) - Install and configure Better Agent.
+- Core Features: [Features](/docs/features) - Product capabilities and workflows readers can use or operate.
+- Core Features: [AI Responses](/docs/features/ai-responses) - AI responses turn retrieved context into a concise answer for the person asking the question.
+- Core Features: [Conversation Memory](/docs/features/conversation-memory) - Conversation memory keeps recent messages so follow-up questions can use nearby context.
+- Core Features: [Developer Tools](/docs/features/developer-tools) - Developer tools help configure, inspect, and generate the pieces needed to run the product.
+- Core Features: [Documentation Lookup](/docs/features/documentation-lookup) - Documentation lookup finds relevant docs context before the project answers a user question.
+- Core Features: [Event Tracking](/docs/features/event-tracking) - Event tracking turns runtime activity into timelines, audit trails, and last-seen context.
+- Core Features: [Session Management](/docs/features/session-management) - Session management explains active authentication state, sign-in activity, and session controls.
+- Self-Hosting: [Self-Hosting](/docs/self-hosting) - Runtime and deployment setup for running the project in your own environment.
+- Self-Hosting: [Astro Setup](/docs/self-hosting/astro) - Astro setup shows how to mount the product inside an Astro host application.
+- Self-Hosting: [Express Setup](/docs/self-hosting/express) - Express setup shows how to mount the product inside an Express host application.
+- Configuration: [Configuration](/docs/configuration) - Runtime values, environment variables, deployment settings, and framework configuration.
+- Configuration: [Environment Variables](/docs/configuration/environment) - Environment variables provide runtime secrets, URLs, provider settings, and deployment values.
+- Guides: [Guides](/docs/guides) - Task-oriented workflows that move readers from setup to a useful outcome.
+- Guides: [CLI Usage](/docs/guides/cli-usage) - CLI usage explains the commands and flags developers use to initialize, run, and debug the product.
+- Examples: [Examples](/docs/examples) - Example implementations that show the project in realistic host applications.
+- Examples: [Astro Example](/docs/examples/astro) - Astro Example shows the shape of a working Astro integration.
+- API Reference: [API Reference](/docs/api) - Concrete developer-facing surfaces: commands, exports, adapters, routes, and type contracts.
+- API Reference: [CLI](/docs/api/cli) - Commands and flags for running repository workflows from the terminal.
+- API Reference: [CLI Usage](/docs/api/cli/usage) - The repository exposes a command-line entrypoint and runtime flags.
+- Anthropic: [Anthropic](/docs/anthropic) - Anthropic pages for understanding and using Better Agent.
+- Core: [Core](/docs/core) - Core pages for understanding and using Better Agent.
+- Mcp: [Mcp](/docs/mcp) - Mcp pages for understanding and using Better Agent.
+- Openai: [Openai](/docs/openai) - Openai pages for understanding and using Better Agent.
+- Packages: [Packages](/docs/packages) - Packages pages for understanding and using Better Agent.
+- Xai: [Xai](/docs/xai) - Xai pages for understanding and using Better Agent.
+- Anthropic: [Client](/docs/anthropic/client) - Client explains the responsibility boundary around `anthropic/client`.
+- Anthropic: [Responses](/docs/anthropic/responses) - Responses explains the responsibility boundary around `anthropic/responses`.
+- Anthropic: [Tools](/docs/anthropic/tools) - Tools explains the responsibility boundary around `anthropic/tools`.
+- Core: [Client](/docs/core/client) - Client explains the responsibility boundary around `core/client`.
+- Mcp: [Tool](/docs/mcp/tool) - Tool explains the responsibility boundary around `mcp/tool`.
+- Openai: [Audio Speech](/docs/openai/audio-speech) - Audio Speech explains the responsibility boundary around `openai/audio-speech`.
+- Openai: [Audio Transcription](/docs/openai/audio-transcription) - Audio Transcription explains the responsibility boundary around `openai/audio-transcription`.
+- Openai: [Client](/docs/openai/client) - Client explains the responsibility boundary around `openai/client`.
+- Openai: [Embeddings](/docs/openai/embeddings) - Embeddings explains the responsibility boundary around `openai/embeddings`.
+- Openai: [Images](/docs/openai/images) - Images explains the responsibility boundary around `openai/images`.
+- Openai: [Models](/docs/openai/models) - Models explains the responsibility boundary around `openai/models`.
+- Openai: [Responses](/docs/openai/responses) - Responses explains the responsibility boundary around `openai/responses`.
+- Openai: [Tools](/docs/openai/tools) - Tools explains the responsibility boundary around `openai/tools`.
+- Openai: [Videos](/docs/openai/videos) - Videos explains the responsibility boundary around `openai/videos`.
+- Packages: [Create](/docs/packages/create) - Create explains the responsibility boundary around `packages/create`.
+- Xai: [Client](/docs/xai/client) - Client explains the responsibility boundary around `xai/client`.
+- Xai: [Images](/docs/xai/images) - Images explains the responsibility boundary around `xai/images`.
+- Xai: [Models](/docs/xai/models) - Models explains the responsibility boundary around `xai/models`.
+- Xai: [Responses](/docs/xai/responses) - Responses explains the responsibility boundary around `xai/responses`.
+- Xai: [Tools](/docs/xai/tools) - Tools explains the responsibility boundary around `xai/tools`.
+## Project At A Glance
+- Project type: `cli`
+- Package name: `better-agent`
+- Runtime and adapter coverage: Astro, Express, Gin, Next.js, Nuxt, Remix, SvelteKit, TanStack Start
+## Core Capabilities
+- AI Responses: The response step prepares the user question, recent context when available, and retrieved documentation snippets for the configured model provider. It should stay grounded in the provided docs and fall back to a simpler response when the provider is unavailable. Key concepts: model provider, grounded prompt, retrieved context, fallback response.
+- Conversation Memory: Conversation memory is the short-term context layer for chat-style products. It groups recent messages by user, channel, session, or conversation, keeps the history bounded, and expires stale context so answers can be relevant without storing unlimited chat data. Key concepts: recent messages, conversation context, session timeout, bounded history.
+- Documentation Lookup: This workflow turns a user question into usable documentation context. It sends the question to the configured documentation source, parses the returned sections, keeps useful metadata such as titles and source links, and hands the best context to the response step. Key concepts: docs retrieval, query text, source links, code examples.
+- Session Management: This area explains how the product observes active authentication state. It connects user identity, session creation, sign-in activity, cookies or tokens, and any security-sensitive controls exposed to administrators. Key concepts: sessions, sign in, tokens, cookies.
+- Developer Tools: This section explains the utilities that help developers inspect, configure, or generate parts of the product. These tools are not just UI screens; they are shortcuts for common setup, debugging, schema, email, or integration work. Key concepts: developer tools, generators, inspectors, visual editors.
+- Event Tracking: This capability turns runtime activity into a timeline that administrators can inspect. It is especially useful for auth products because sign-ins, session creation, account updates, and organization events often need auditability and context. Key concepts: events, audit trail, activity feed, last seen.
+## Runtime and Adapter Coverage
+- Astro
+- Express
+- Gin
+- Next.js
+- Nuxt
+- Remix
+- SvelteKit
+- TanStack Start
+## Common Commands
+- `dev` runs `turbo dev --filter='./packages/*'` and starts the local development workflow.
+- `build` runs `turbo build --filter='./packages/*'` and creates the production build or compiled package artifacts.
+- `check` runs `bun run lint:ci && bun run typecheck && bun run build` and supports the project workflow.
+- `typecheck` runs `turbo run typecheck --filter='./packages/*'` and supports the project workflow.
+## Configuration You May Need
+- `ANTHROPIC_API_KEY` - Anthropic API key used when the project generates AI answers through Anthropic.
+- `BA_DEBUG`
+- `BETTER_AGENT_API_KEY` - API key used to authenticate with the named provider.
+- `BETTER_AGENT_SECRET`
+- `BUN_TEST`
+- `CONTEXT7_MCP_URL` - URL used by the runtime to reach an external service, app, or callback endpoint.
+- `FORCE_COLOR`
+- `HOME`
+- `JEST_WORKER_ID`
+- `NO_COLOR`
+- `NODE_ENV`
+- `OPENAI_API_KEY` - OpenAI API key used when the project generates AI answers from retrieved context.

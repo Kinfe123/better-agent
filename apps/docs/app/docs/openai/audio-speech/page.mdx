@@ -1,0 +1,25 @@
+---
+title: "Audio Speech"
+description: "Audio Speech explains the responsibility boundary around `openai/audio-speech`."
+order: 330
+---
+
+# Audio Speech
+
+Audio Speech explains the responsibility boundary around `openai/audio-speech`.
+## What This Area Does
+Audio Speech describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+The behavior is inferred from named inputs and mappings in the implementation, so this page stays conservative until richer usage examples are available.
+
+## Behavior Notes
+- Recognizes package markers such as `at`, `message`, `type`, `role`, `kind`, `finishReason`, `endpoint`, `path`.
+- Normalizes inputs to values such as `at` -> `openai.audio.speech.map.inputMissing`, `message` -> `Failed to map OpenAI Audio Speech request`, `at` -> `openai.audio.speech.mapToRequest`, `type` -> `message`, `role` -> `assistant`, `type` -> `audio`, `kind` -> `base64`, `finishReason` -> `stop`, and more.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Audio Speech page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.

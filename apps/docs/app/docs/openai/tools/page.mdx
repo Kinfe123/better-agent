@@ -1,0 +1,30 @@
+---
+title: "Tools"
+description: "Tools explains the responsibility boundary around `openai/tools`."
+order: 400
+---
+
+# Tools
+
+Tools explains the responsibility boundary around `openai/tools`.
+## What This Area Does
+Tools describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+- `mapOpenAINativeToolToRequest(tool: AnyOpenAINativeToolDefinition): NonNullable<OpenAICreateResponseSchema["tools"]>[number]` - Converts a hosted OpenAI tool definition to Responses API `tools[]` payload shape.
+
+## Behavior Notes
+- Recognizes package markers such as `kind`, `provider`.
+- Normalizes inputs to values such as `kind` -> `hosted`, `provider` -> `openai`.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Tools page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.
+## From The README
+The README already describes this area in project language. These excerpts are the reader-facing baseline before adding more examples.
+
+### Introduction
+Better Agent is a TypeScript framework for building typed, event driven, framework agnostic agent applications.  It provides structure for agents, tools, approvals, persistence, streaming, and typed clients without forcing a fixed application model.

@@ -1,0 +1,51 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 20
+---
+
+# Installation
+
+This page explains how to get Better Agent into a runnable state. It separates the setup model from command lists so readers understand what each step is preparing.
+## Setup Model
+Installation has three jobs: install the package dependencies, provide the runtime configuration the project expects, and verify the command that exercises the main workflow. If any of those steps are skipped, the application may install correctly but still fail when it tries to load database, adapter, environment-backed, or service-backed behavior.
+## What Gets Configured
+- Dependencies provide the framework, CLI, adapters, and runtime libraries used by the project.
+- Environment variables provide secrets, URLs, database connections, provider tokens, and deployment-specific behavior.
+- Scripts provide repeatable entrypoints for local development, production builds, tests, and release tasks.
+## Successful Setup Looks Like
+- Dependencies install with the package manager already used by the project.
+- Required environment variables are present before runtime commands are executed.
+- The primary command starts, builds, or verifies the project without needing undocumented manual steps.
+## Install Dependencies
+Run `bun install` from the project root.
+## Configure Environment Variables
+Copy `env.example` into `.env` and fill in the required values before running the project.
+- `ANTHROPIC_API_KEY` - Anthropic API key used when the project generates AI answers through Anthropic.
+- `BA_DEBUG`
+- `BETTER_AGENT_API_KEY` - API key used to authenticate with the named provider.
+- `BETTER_AGENT_SECRET`
+- `BUN_TEST`
+- `CONTEXT7_MCP_URL` - URL used by the runtime to reach an external service, app, or callback endpoint.
+- `FORCE_COLOR`
+- `HOME`
+- `JEST_WORKER_ID`
+- `NO_COLOR`
+- `NODE_ENV`
+- `OPENAI_API_KEY` - OpenAI API key used when the project generates AI answers from retrieved context.
+## Verify the Build or Runtime Command
+The most relevant command detected right now is `bun run dev`.
+## Framework and Adapter Coverage
+- Astro
+- Express
+- Gin
+- Next.js
+- Nuxt
+- Remix
+- SvelteKit
+- TanStack Start
+## Useful Commands
+- `dev` runs `turbo dev --filter='./packages/*'` and starts the local development workflow.
+- `build` runs `turbo build --filter='./packages/*'` and creates the production build or compiled package artifacts.
+- `check` runs `bun run lint:ci && bun run typecheck && bun run build` and supports the project workflow.
+- `typecheck` runs `turbo run typecheck --filter='./packages/*'` and supports the project workflow.

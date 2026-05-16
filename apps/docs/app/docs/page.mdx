@@ -1,0 +1,100 @@
+---
+title: "create-better-agent"
+description: "Overview for create-better-agent."
+order: 0
+---
+
+# create-better-agent
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps.
+
+## Why It Exists
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack, including your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## Features
+
+        01
+        Typed Agents
+      Define an agent once and keep its model, tools, context, and output schema typed together.
+        02
+        Type-Safe Client
+      Infer agent names, inputs, outputs, and hooks directly from your server app.
+        03
+        Multi-Provider
+      Use the same app shape across supported providers instead of rewriting your runtime for each one.
+        04
+        Plugins
+      Add guards, lifecycle hooks, middleware, and custom endpoints without rebuilding the core loop.
+        05
+        Framework Agnostic
+      Mount Better Agent in the server stack you already use instead of adopting a fixed app framework.
+        06
+        Event Driven
+      Listen to structured events for messages, tool calls, approvals, and streaming state as runs progress.
+        07
+        Durable Runs
+      Add minimal persistence stores when you need resumable conversations, replayable streams, or active run tracking.
+        08
+        Human in the Loop
+      Pause sensitive tool calls for approval and continue the run after a user decision.
+        09
+        Structured Output
+      Validate responses against a schema and get typed data back from the run result.
+
+## Where To Go Next
+
+- [Installation](/docs/get-started/installation) to set up the packages and first app.
+- [Usage](/docs/get-started/usage) to add a typed client and UI.
+- [Concepts](/docs/concepts/agent) to understand how the core pieces fit together.
+
+## Documentation Map
+- Get Started: [create-better-agent](/docs) - Overview for create-better-agent.
+- Get Started: [Get Started](/docs/get-started) - Get Started pages for understanding and using create-better-agent.
+- Get Started: [Installation](/docs/get-started/installation) - Set up Better Agent in your project.
+- Get Started: [Introduction](/docs/get-started/introduction) - Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps.
+- Get Started: [llms.txt](/docs/get-started/llms-txt) - Use the Better Agent docs as plain text for LLM tools.
+- Get Started: [Usage](/docs/get-started/usage) - Create your first agent app.
+- Core Concepts: [Concepts](/docs/concepts) - Core ideas and mental models that explain how the project works.
+- Core Concepts: [Agent](/docs/concepts/agent) - The fundamental building block of Better Agent.
+- Core Concepts: [API](/docs/concepts/api) - Expose your Better Agent app over HTTP.
+- Core Concepts: [CLI](/docs/concepts/cli) - Generate portable client types from your Better Agent app.
+- Core Concepts: [Client](/docs/concepts/client) - Type-safe HTTP client for Better Agent servers.
+- Core Concepts: [Errors](/docs/concepts/errors) - Understand Better Agent error codes, shapes, and recovery.
+- Core Concepts: [Events](/docs/concepts/events) - Observe what happens during an agent run in real time.
+- Core Concepts: [Human in the Loop](/docs/concepts/hil) - Require human approval before a tool runs.
+- Core Concepts: [MCP](/docs/concepts/mcp) - Use MCP to connect agents to external tools and data.
+- Core Concepts: [Persistence](/docs/concepts/persistence) - Store and replay conversation history across runs.
+- Core Concepts: [Plugins](/docs/concepts/plugins) - Extend Better Agent with cross-agent behavior.
+- Core Concepts: [Providers](/docs/concepts/providers) - Connect Better Agent to model APIs.
+- Core Concepts: [Structured Output](/docs/concepts/structured-output) - Get typed, validated responses from your agents.
+- Core Concepts: [Tools](/docs/concepts/tools) - Let agents take structured actions.
+- Core Concepts: [TypeScript](/docs/concepts/typescript) - End-to-end type inference from server to client.
+- Integrations: [Integrations](/docs/integrations) - Framework and runtime integrations for using the project in real applications.
+- Integrations: [Backend](/docs/integrations/backend) - Backend pages for understanding and using create-better-agent.
+- Integrations: [Full Stack](/docs/integrations/full-stack) - Full Stack pages for understanding and using create-better-agent.
+- Integrations: [Elysia](/docs/integrations/backend/elysia) - Integrate Better Agent with Elysia.
+- Integrations: [Express](/docs/integrations/backend/express) - Integrate Better Agent with Express.
+- Integrations: [Fastify](/docs/integrations/backend/fastify) - Integrate Better Agent with Fastify.
+- Integrations: [Hono](/docs/integrations/backend/hono) - Integrate Better Agent with Hono.
+- Integrations: [NestJS](/docs/integrations/backend/nestjs) - Integrate Better Agent with NestJS.
+- Integrations: [Astro](/docs/integrations/full-stack/astro) - Build Better Agent apps in Astro.
+- Integrations: [Next.js](/docs/integrations/full-stack/nextjs) - Build Better Agent apps in Next.js.
+- Integrations: [Nuxt](/docs/integrations/full-stack/nuxt) - Build Better Agent apps in Nuxt.
+- Integrations: [Remix](/docs/integrations/full-stack/remix) - Build Better Agent apps in Remix.
+- Integrations: [SolidStart](/docs/integrations/full-stack/solidstart) - Build Better Agent apps in SolidStart.
+- Integrations: [SvelteKit](/docs/integrations/full-stack/sveltekit) - Build Better Agent apps in SvelteKit.
+- Integrations: [TanStack Start](/docs/integrations/full-stack/tanstack-start) - Build Better Agent apps in TanStack Start.
+- Plugins: [Plugins](/docs/plugins) - Optional capabilities that extend or customize the project.
+- Plugins: [Auth](/docs/plugins/auth) - API key auth plugin with static keys or custom validation.
+- Plugins: [IP Allowlist](/docs/plugins/ip-allowlist) - IP allowlist plugin with exact IPs, CIDR ranges, and proxy-aware resolution.
+- Plugins: [Logging](/docs/plugins/logging) - Structured runtime logging plugin with filtering, redaction, and custom formatting.
+- Plugins: [Rate Limit](/docs/plugins/rate-limit) - Rate limiting plugin using windowed counters with optional custom storage.
+- Plugins: [Sandbox](/docs/plugins/sandbox) - Give your agents a real workspace to run code, edit files, and preview apps.
+- Providers: [Providers](/docs/providers) - Providers pages for understanding and using create-better-agent.
+- Providers: [Anthropic](/docs/providers/anthropic) - Use Anthropic with Better Agent by creating the provider and choosing a model.
+- Providers: [OpenAI](/docs/providers/openai) - Use OpenAI with Better Agent by creating the provider and choosing a model.
+- Providers: [xAI](/docs/providers/xai) - Use xAI with Better Agent by creating the provider and choosing a model.

@@ -1,0 +1,33 @@
+---
+title: "Tool"
+description: "Tool explains the responsibility boundary around `mcp/tool`."
+order: 320
+---
+
+# Tool
+
+Tool explains the responsibility boundary around `mcp/tool`.
+## What This Area Does
+Tool describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+- `isJSONRPCRequest(message: JSONRPCMessage): message is JSONRPCRequest` - JSON-RPC 2.0 message types for MCP communication. Follows the Model Context Protocol's JSON-RPC usage. / JSON-RPC version. export const JSONRPC_VERSION = "2.0"; JSON-RPC request. export interface JSONRPCRequest { jsonrpc: "2.0"; id: string | number; method: string; params: Record<string, unknown> | undefined; } JSON-RPC response with a result. export interface JSONRPCResponse { jsonrpc: "2.0"; id: string | number; result: unknown; } JSON-RPC error response. export interface JSONRPCError { jsonrpc: "2.0"; id: string | number; error: { code: number; message: string; data: unknown | undefined; }; } JSON-RPC notification with no `id`. export interface JSONRPCNotification { jsonrpc: "2.0"; method: string; params: Record<string, unknown> | undefined; } Any JSON-RPC message. export type JSONRPCMessage = JSONRPCRequest | JSONRPCResponse | JSONRPCError | JSONRPCNotification; Checks whether a message is a JSON-RPC request.
+- `isJSONRPCResponse(message: JSONRPCMessage): message is JSONRPCResponse` - Checks whether a message is a JSON-RPC response.
+- `isJSONRPCError(message: JSONRPCMessage): message is JSONRPCError` - Checks whether a message is a JSON-RPC error.
+- `isJSONRPCNotification(message: JSONRPCMessage): message is JSONRPCNotification` - Checks whether a message is a JSON-RPC notification.
+
+## Behavior Notes
+- Recognizes package markers such as `message`, `method`, `jsonrpc`.
+- Normalizes inputs to values such as `message` -> `Invalid JSON-RPC message: expected an object.`, `message` -> `Invalid JSON-RPC message: method must be a string.`, `message` -> `Invalid JSON-RPC message: params must be an object when present.`, `message` -> `Invalid JSON-RPC request: id must be a string or number.`, `message` -> `Invalid JSON-RPC response: id must be a string or number.`, `message` -> `Invalid JSON-RPC error: id must be a string or number.`, `message` -> `Invalid JSON-RPC error: error must include numeric code and string message.`, `message` -> `Invalid JSON-RPC message: unrecognized shape.`, and more.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Tool page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.
+## From The README
+The README already describes this area in project language. These excerpts are the reader-facing baseline before adding more examples.
+
+### Introduction
+Better Agent is a TypeScript framework for building typed, event driven, framework agnostic agent applications.  It provides structure for agents, tools, approvals, persistence, streaming, and typed clients without forcing a fixed application model.

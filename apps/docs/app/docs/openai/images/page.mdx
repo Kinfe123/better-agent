@@ -1,0 +1,25 @@
+---
+title: "Images"
+description: "Images explains the responsibility boundary around `openai/images`."
+order: 370
+---
+
+# Images
+
+Images explains the responsibility boundary around `openai/images`.
+## What This Area Does
+Images describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+The behavior is inferred from named inputs and mappings in the implementation, so this page stays conservative until richer usage examples are available.
+
+## Behavior Notes
+- Recognizes package markers such as `/v1/images/edits`, `at`, `kind`, `type`, `role`, `finishReason`, `mode`.
+- Normalizes inputs to values such as `/v1/images/edits` -> `/v1/images/generations`, `at` -> `openai.images.map.inputLimit`, `at` -> `openai.images.map.inputShape`, `at` -> `openai.images.map.partType`, `kind` -> `event`, `kind` -> `base64`, `type` -> `message`, `role` -> `assistant`, and more.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Images page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.

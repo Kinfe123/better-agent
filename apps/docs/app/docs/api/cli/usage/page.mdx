@@ -1,0 +1,48 @@
+---
+title: "CLI Usage"
+description: "The repository exposes a command-line entrypoint and runtime flags."
+order: 210
+---
+
+# CLI Usage
+
+The repository exposes a command-line entrypoint and runtime flags.
+## Command Purpose
+The CLI entrypoint is a developer workflow. This page explains what command-line options exist, what configuration they depend on, and how to verify the command did what the repository says it does.
+## How to Run It
+Run `bun run dev` from the project root after dependencies and required environment values are ready.
+Install dependencies first with `bun install`.
+## What the Command Depends On
+The command reads environment-backed configuration. Set these values before using large runs or automation.
+- `HOME`
+- `BA_DEBUG`
+- `BUN_TEST`
+- `JEST_WORKER_ID`
+- `NODE_ENV`
+- `OPENAI_API_KEY` - OpenAI API key used when the project generates AI answers from retrieved context.
+- `OPENAI_BASE_URL` - URL used by the runtime to reach an external service, app, or callback endpoint.
+- `VITEST`
+## Flags and Options
+Use flags to override defaults for a specific run. Prefer the default script first, then add flags when you need a different scale, concurrency level, target, or debug mode.
+- `--plugins`
+- `--yes`: Skip prompts and overwrite output
+- `--framework`
+- `--mode`
+- `--no-starter-ui`
+- `--plugin`
+- `--starter-ui`
+- `--cwd <path>`: Base directory for resolving relative config paths
+- `--name <identifier>`: Exported type alias name
+- `--out <path>`: Generated .d.ts file path
+- `--provider`
+- `--providers`
+## Useful Commands
+- `dev` runs `turbo dev --filter='./packages/*'` and starts the local development workflow.
+- `build` runs `turbo build --filter='./packages/*'` and creates the production build or compiled package artifacts.
+- `check` runs `bun run lint:ci && bun run typecheck && bun run build` and supports the project workflow.
+- `typecheck` runs `turbo run typecheck --filter='./packages/*'` and supports the project workflow.
+## Verification Checklist
+- Confirm required environment values are present before running the command.
+- Start with the smallest safe command or script before increasing scale.
+- Use `--help` when available to confirm the flags supported by the current version.
+- Check the command output or downstream service to confirm the expected side effect happened.

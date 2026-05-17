@@ -1,0 +1,25 @@
+---
+title: "Create"
+description: "Create explains the responsibility boundary around `packages/create`."
+order: 420
+---
+
+# Create
+
+Create explains the responsibility boundary around `packages/create`.
+## What This Area Does
+Create describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+The behavior is inferred from named inputs and mappings in the implementation, so this page stays conservative until richer usage examples are available.
+
+## Behavior Notes
+- Recognizes package markers such as `title`.
+- Normalizes inputs to values such as `title` -> `Better Agent Starter`.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Create page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.

@@ -1,0 +1,45 @@
+---
+title: "CLI Usage"
+description: "CLI usage explains the commands and flags developers use to initialize, run, and debug the product."
+order: 160
+---
+
+# CLI Usage
+
+CLI usage explains the commands and flags developers use to initialize, run, and debug the product.
+## Goal
+CLI usage explains the command-line mental model: which commands exist, when to use each command, which flags affect runtime behavior, and how the CLI discovers project configuration.
+## Key Ideas
+- commands
+- flags
+- config discovery
+- local development
+- standalone server
+## Before You Start
+- Install dependencies with `bun install`.
+- Confirm the main workflow with `bun run dev`.
+- Review required configuration before running commands that create or mutate data.
+## Run The Workflow
+1. Install or run the CLI from the host project root.
+2. Choose the command that matches the task, such as starting the studio or initializing config.
+3. Pass flags for port, host, config path, watch mode, or other runtime behavior when defaults do not match the app.
+## Useful Commands
+- `dev` runs `turbo dev --filter='./packages/*'` and starts the local development workflow.
+- `check` runs `bun run lint:ci && bun run typecheck && bun run build` and supports the project workflow.
+- `typecheck` runs `turbo run typecheck --filter='./packages/*'` and supports the project workflow.
+- `build` runs `turbo build --filter='./packages/*'` and creates the production build or compiled package artifacts.
+- `lint:types` runs `turbo run lint:types --filter='./packages/*'` and checks or fixes code style before changes are shipped.
+- `lint:packages` runs `turbo run lint:package --filter='./packages/*'` and checks or fixes code style before changes are shipped.
+## Useful Options
+- `--yes`: Skip prompts and overwrite output
+- `--config <path...>`: One or more Better Agent config paths (e.g. --config ./agents.ts ./libs/better-agent.ts
+- `--cwd <path>`: Base directory for resolving relative config paths
+- `--name <identifier>`: Exported type alias name
+- `--out <path>`: Generated .d.ts file path
+- `--no-starter-ui`
+- `--starter-ui`
+- `--framework`
+- `--mode`
+- `--plugin`
+- `--plugins`
+- `--provider`

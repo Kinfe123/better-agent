@@ -1,0 +1,49 @@
+---
+title: "Quickstart"
+description: "Run Better Agent with the current scripts and configuration."
+order: 10
+---
+
+# Quickstart
+
+This is the shortest path from clone to a useful first run of Better Agent. The goal is not to understand every file yet; the goal is to install dependencies, provide required configuration, and run the command that proves the project is alive.
+## What You Will Accomplish
+- Prepare the project with the detected package manager.
+- Add the minimum environment configuration needed for runtime behavior.
+- Run the primary workflow so you can confirm the project is usable before exploring advanced docs.
+## Before You Start
+This project uses `bun` as its package manager.
+Environment-backed behavior is present, so configuration is part of the first-run path.
+## Recommended First Run
+1. Install dependencies with `bun install`.
+2. Copy `env.example` to `.env` and set the required values.
+3. Run `bun run dev` to exercise the main workflow.
+## Useful Commands
+These commands are useful after the first run because they are the repeatable workflows available in the project.
+- `dev` runs `turbo dev --filter='./packages/*'` and starts the local development workflow.
+- `build` runs `turbo build --filter='./packages/*'` and creates the production build or compiled package artifacts.
+- `check` runs `bun run lint:ci && bun run typecheck && bun run build` and supports the project workflow.
+- `typecheck` runs `turbo run typecheck --filter='./packages/*'` and supports the project workflow.
+## Useful CLI Options
+- `--config <path...>`: One or more Better Agent config paths (e.g. --config ./agents.ts ./libs/better-agent.ts
+- `--cwd <path>`: Base directory for resolving relative config paths
+- `--framework`
+- `--mode`
+- `--name <identifier>`: Exported type alias name
+- `--no-starter-ui`
+- `--out <path>`: Generated .d.ts file path
+- `--plugin`
+- `--plugins`
+- `--provider`
+- `--providers`
+- `--starter-ui`
+- `--yes`: Skip prompts and overwrite output
+## Next Places to Read
+- Better Agent: `docs/page.mdx`
+- Installation: `docs/installation/page.mdx`
+- Features: `docs/features/page.mdx`
+- AI Responses: `docs/features/ai-responses/page.mdx`
+- Conversation Memory: `docs/features/conversation-memory/page.mdx`
+- Developer Tools: `docs/features/developer-tools/page.mdx`
+- Documentation Lookup: `docs/features/documentation-lookup/page.mdx`
+- Event Tracking: `docs/features/event-tracking/page.mdx`

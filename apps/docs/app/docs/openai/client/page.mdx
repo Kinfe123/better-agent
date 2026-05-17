@@ -1,0 +1,36 @@
+---
+title: "Client"
+description: "Client explains the responsibility boundary around `openai/client`."
+order: 350
+---
+
+# Client
+
+Client explains the responsibility boundary around `openai/client`.
+## What This Area Does
+Client describes behavior readers can rely on before they inspect source details.
+## What It Actually Does
+The behavior is inferred from named inputs and mappings in the implementation, so this page stays conservative until richer usage examples are available.
+
+## Behavior Notes
+- Recognizes package markers such as `Content-Type`, `method`, `provider`, `at`, `message`, `code`, `Accept`.
+- Normalizes inputs to values such as `Content-Type` -> `application/json`, `method` -> `POST`, `provider` -> `openai`, `at` -> `openai.http.post.noData`, `message` -> `OpenAI request failed`, `code` -> `UPSTREAM_FAILED`, `at` -> `openai.http.post.exception`, `Accept` -> `text/event-stream`, and more.
+## How To Approach It
+- Start with the workflow or capability this area supports.
+- Move to setup, configuration, guide, or API pages when you need commands, options, or import paths.
+- Keep implementation verification separate from the reader-facing explanation.
+## Reader Path
+1. Start with the Client page to understand what this area is for.
+2. Review the setup, configuration, or guide page when the behavior depends on runtime context.
+3. Use API reference only when you need exact commands, imports, or options.
+## From The README
+The README already describes this area in project language. These excerpts are the reader-facing baseline before adding more examples.
+
+### Introduction
+Better Agent is a TypeScript framework for building typed, event driven, framework agnostic agent applications.  It provides structure for agents, tools, approvals, persistence, streaming, and typed clients without forcing a fixed application model.
+
+### Why It Exists
+- Agent apps should be typed end to end, from definitions to client calls.
+- The framework should fit into your existing stack, including your application, database, and auth.
+- Reusable behavior should be easy to package and share as plugins.
+- Durable conversations and resumable runs should be easy to build with first class persistence support.

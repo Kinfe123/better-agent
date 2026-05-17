@@ -1,0 +1,29 @@
+---
+title: "Conversation Memory"
+description: "Conversation memory keeps recent messages so follow-up questions can use nearby context."
+order: 50
+---
+
+# Conversation Memory
+
+Conversation memory keeps recent messages so follow-up questions can use nearby context.
+## What You Can Do
+Conversation memory is the short-term context layer for chat-style products. It groups recent messages by user, channel, session, or conversation, keeps the history bounded, and expires stale context so answers can be relevant without storing unlimited chat data.
+## Key Ideas
+- recent messages
+- conversation context
+- session timeout
+- bounded history
+- cleanup
+## How It Works
+1. Store the user question and bot answer under the active conversation.
+2. Include recent history when the next answer depends on what was just discussed.
+3. Expire or clear old history so context stays bounded and privacy-friendly.
+## From The README
+The README already describes this area in project language. These excerpts are the reader-facing baseline before adding more examples.
+
+### Why It Exists
+- Agent apps should be typed end to end, from definitions to client calls.
+- The framework should fit into your existing stack, including your application, database, and auth.
+- Reusable behavior should be easy to package and share as plugins.
+- Durable conversations and resumable runs should be easy to build with first class persistence support.

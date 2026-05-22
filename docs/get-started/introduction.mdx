@@ -1,0 +1,44 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 30
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps.
+
+## Why it exists
+
+Agent frameworks often force you to adopt a fixed runtime, a proprietary client, or a narrow set of supported models. Better Agent is built around four different goals:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack, including your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## What you get
+
+**Typed Agents.** Define an agent once and keep its model, tools, context, and output schema typed together. Names, inputs, and outputs flow through to the client without manual wiring.
+
+**Type-Safe Client.** Infer agent names, inputs, outputs, and hooks directly from your server app. When the client and server live in separate packages, generate a portable `.d.ts` file with the CLI instead of importing server code.
+
+**Multi-Provider.** Use the same app shape across supported providers instead of rewriting your runtime for each one. OpenAI, Anthropic, and xAI are available today.
+
+**Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints without rebuilding the core loop. Register a plugin once at the app level and it applies to every agent.
+
+**Framework Agnostic.** Mount Better Agent in the server stack you already use — Next.js, Remix, SvelteKit, TanStack Start, Astro, Nuxt, SolidStart, Express, Fastify, Hono, Elysia, or NestJS — instead of adopting a fixed app framework.
+
+**Event Driven.** Listen to structured events for messages, tool calls, approvals, and streaming state as runs progress.
+
+**Durable Runs.** Add minimal persistence stores when you need resumable conversations, replayable streams, or active run tracking.
+
+**Human in the Loop.** Pause sensitive tool calls for approval and continue the run after a user decision.
+
+**Structured Output.** Validate responses against a schema and get typed data back from the run result.
+
+## Where to go next
+
+- [Installation](/docs/get-started/installation) — set up the packages and scaffold your first app.
+- [Usage](/docs/get-started/usage) — build a small server, typed client, and UI in one pass.
+- [Agent](/docs/concepts/agent) — understand the core building block before adding tools or output schemas.

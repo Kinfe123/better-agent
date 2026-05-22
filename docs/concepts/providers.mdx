@@ -1,0 +1,164 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 110
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. A provider gives you typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level. Tools, structured output, and modalities only appear when the model supports them.
+
+## Use a Provider
+
+The pattern is the same across providers: create an instance, get a model, and pass it to an agent.
+
+```ts title="server.ts"
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey` and optional `baseURL` and `headers` for custom endpoints or proxies.
+
+```ts title="server.ts"
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: "https://my-proxy.example.com/v1",
+  headers: { "X-Custom-Header": "value" },
+});
+```
+
+## Model Helpers
+
+### model()
+
+`model()` auto-detects the model type from the ID and routes to the correct provider endpoint. This is the most common way to get a model. Unknown IDs default to the text endpoint.
+
+```ts title="server.ts"
+const textModel = openai.model("gpt-4o");
+const imageModel = openai.model("gpt-image-1");
+```
+
+### Modality helpers
+
+Providers can expose modality-specific helpers for explicit model selection. Use these when you want the type system to enforce a specific output type.
+
+```ts title="server.ts"
+const text = openai.text("gpt-4o");
+const image = openai.image("gpt-image-1");
+const audio = openai.audio("tts-1");
+const video = openai.video("sora-2");
+const transcription = openai.transcription("gpt-4o-transcribe");
+const embedding = openai.embedding("text-embedding-3-small");
+```
+
+Not all providers support all helpers. `model()` is always available. Check the individual provider page for the full list of supported helpers and model IDs.
+
+## Provider Options
+
+Models accept provider-specific options such as `temperature`, `reasoningEffort`, or `maxOutputTokens`. These are fully typed by the provider, so you get autocomplete and compile-time errors.
+
+Set defaults on the agent definition:
+
+```ts title="server.ts"
+const agent = defineAgent({
+  name: "reasoner",
+  model: openai.text("o3"),
+  defaultModelOptions: {
+    reasoningEffort: "high",
+    temperature: 0.2,
+  },
+});
+```
+
+Override for a specific run:
+
+```ts title="app.ts"
+const result = await app.run("reasoner", {
+  input: "Solve this step by step...",
+  modelOptions: {
+    reasoningEffort: "low",
+    temperature: 0.8,
+  },
+});
+```
+
+Per-run `modelOptions` override the agent's `defaultModelOptions` for that run only. Each provider and model type has its own supported options — check the relevant provider page for the full list.
+
+## Custom Providers
+
+You can build a custom provider by implementing the `GenerativeModel` interface from `@better-agent/core`. A model needs `providerId`, `modelId`, `caps`, and at least one of `doGenerate` or `doGenerateStream`.
+
+```ts title="my-provider.ts"
+import type { GenerativeModel, Capabilities } from "@better-agent/core";
+
+const MY_CAPS = {
+  inputModalities: { text: true },
+  outputModalities: { text: true },
+  inputShape: "chat",
+  replayMode: "multi_turn",
+  supportsInstruction: true,
+  structured_output: false,
+  tools: false,
+} satisfies Capabilities;
+
+type MyOptions = {
+  temperature?: number;
+};
+
+export const myModel: GenerativeModel<MyOptions, "my-provider", "my-model-1", typeof MY_CAPS> = {
+  providerId: "my-provider",
+  modelId: "my-model-1",
+  caps: MY_CAPS,
+  doGenerate: async (options, ctx) => {
+    const response = await callMyAPI(options.input, {
+      temperature: options.temperature,
+      signal: ctx.signal,
+    });
+
+    return {
+      ok: true,
+      value: {
+        response: {
+          output: [
+            {
+              type: "message",
+              role: "assistant",
+              content: [{ type: "text", text: response.text }],
+            },
+          ],
+          finishReason: "stop",
+          usage: {
+            inputTokens: response.usage.input,
+            outputTokens: response.usage.output,
+          },
+        },
+      },
+    };
+  },
+  doGenerateStream: undefined,
+};
+```
+
+Once defined, use it exactly like a built-in model:
+
+```ts title="server.ts"
+const agent = defineAgent({
+  name: "custom",
+  model: myModel,
+});
+```
+
+## What to read next
+
+- [Agent](/docs/concepts/agent) — understand how a model, tools, and instructions come together in a single typed definition.
+- [TypeScript](/docs/concepts/typescript) — see how capability-gated fields flow from your provider choice through to the client.
+- [API](/docs/concepts/api) — mount your agent app over HTTP once a provider and agents are defined.

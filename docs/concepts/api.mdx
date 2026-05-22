@@ -1,0 +1,187 @@
+---
+title: "API"
+description: "Expose your Better Agent app over HTTP."
+order: 70
+---
+
+# API
+
+`betterAgent()` creates an app with a programmatic API (`run`, `stream`) and an HTTP handler. The handler is a standard `Request -> Response` function, so you can mount it in any framework that gives you a `Request` object.
+
+## Create your app
+
+```ts title="server.ts"
+import { betterAgent } from "@better-agent/core";
+import { assistantAgent } from "./agents";
+
+export const app = betterAgent({
+  agents: [assistantAgent],
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `agents` | Agents registered in the app. Required, at least one. |
+| `baseURL` | Base path for the built-in HTTP routes. The pathname is used as the route prefix. |
+| `secret` | Bearer token for built-in HTTP routes. When set, requests must include `Authorization: Bearer <secret>`. |
+| `plugins` | Cross-agent plugins for auth, logging, rate limiting, and more. See [Plugins](/docs/concepts/providers). |
+| `persistence` | Conversation, stream, and runtime state stores. |
+| `tools` | Shared tools available to all agents in the app. |
+| `advanced` | Runtime and HTTP behavior. |
+
+## Programmatic API
+
+Use `app.run()` and `app.stream()` to call agents directly from server code, with no HTTP layer involved.
+
+### run
+
+Runs an agent and waits for the final result.
+
+```ts title="app.ts"
+const result = await app.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+### stream
+
+Streams agent execution events. Returns `runId`, an async iterable of `events`, and a `result` promise.
+
+```ts title="app.ts"
+const stream = app.stream("assistant", {
+  input: "Summarize this document...",
+});
+
+for await (const event of stream.events) {
+  if (event.type === "TEXT_MESSAGE_CONTENT") {
+    process.stdout.write(event.delta);
+  }
+}
+
+const result = await stream.result;
+```
+
+### loadConversation
+
+Loads the stored durable history for a conversation. Returns `null` if nothing is stored.
+
+```ts title="app.ts"
+const conversation = await app.loadConversation("assistant", "conv_123");
+
+if (conversation) {
+  console.log(`${conversation.items.length} items`);
+}
+```
+
+### resumeStream
+
+Resumes a stored stream by stream id. Returns `null` if no stream is found.
+
+```ts title="app.ts"
+const events = await app.resumeStream({ streamId: "run_abc" });
+
+if (events) {
+  for await (const event of events) {
+    console.log(event.type, event.seq);
+  }
+}
+```
+
+### resumeConversation
+
+Resumes the active stream for a conversation. Returns `null` if no active stream exists.
+
+```ts title="app.ts"
+const events = await app.resumeConversation("assistant", {
+  conversationId: "conv_123",
+});
+```
+
+### abortRun
+
+Aborts an active run by id.
+
+```ts title="app.ts"
+await app.abortRun("run_abc");
+```
+
+### submitToolResult
+
+Submits a result for a pending client tool call.
+
+```ts title="app.ts"
+await app.submitToolResult({
+  runId: "run_abc",
+  toolCallId: "call_123",
+  status: "success",
+  result: { confirmed: true },
+});
+```
+
+### submitToolApproval
+
+Submits an approval decision for a pending tool.
+
+```ts title="app.ts"
+await app.submitToolApproval({
+  runId: "run_abc",
+  toolCallId: "call_123",
+  decision: "approved",
+  note: "Verified by admin",
+  actorId: "admin_1",
+});
+```
+
+## HTTP handler
+
+`app.handler` takes a standard Web `Request` and returns a `Response`. Mount it in your framework's catch-all route.
+
+```ts title="server.ts"
+const response = await app.handler(request);
+```
+
+The handler exposes these routes under the configured `baseURL` prefix.
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/:name/run` | Run or stream an agent. Returns JSON for `Accept: application/json`, SSE for `Accept: text/event-stream`. |
+| `GET` | `/:name/conversations/:id` | Load stored conversation history. Returns `204` if not found. |
+| `GET` | `/:name/stream-events/resume` | Resume a stream by `?streamId=`. Returns SSE. |
+| `GET` | `/:name/conversations/:id/resume` | Resume the active stream for a conversation. Returns SSE. |
+| `POST` | `/:name/runs/:runId/abort` | Abort an active run. Returns `204`. |
+| `POST` | `/:name/run/tool-result` | Submit a client tool result. Returns `204` or `404`. |
+| `POST` | `/:name/run/tool-approval` | Submit a tool approval decision. Returns `204` or `404`. |
+
+All built-in routes require bearer auth when `secret` is set. Plugin endpoints can opt out with `public: true`.
+
+## Mount in your framework
+
+The exact wiring depends on your stack. Keep `baseURL` and the mounted route path aligned — if `baseURL` is `"/api"`, mount the handler under `/api`.
+
+**Full-stack frameworks**
+
+- [Next.js](/docs/concepts/providers) — catch-all App Router route
+- [Nuxt](/docs/concepts/providers) — Nuxt server route
+- [SvelteKit](/docs/concepts/typescript) — SvelteKit endpoint
+- [Remix, Astro, SolidStart, TanStack Start](/docs/concepts/typescript) — route module or API route
+
+**Backend servers**
+
+- [Express](/docs/concepts/errors) — adapter from `@better-agent/adapters`
+- [Fastify](/docs/concepts/errors) — adapter from `@better-agent/adapters`
+- Hono, Elysia — forward `Request` directly to `app.handler`
+- NestJS — bridge via the underlying Express or Fastify instance
+
+For framework-specific setup code, see the integration guides linked from the [installation page](/docs/get-started/installation).
+
+## What to read next
+
+- [Agent](/docs/concepts/agent) — define the agents you register in `betterAgent()`.
+- [Client](/docs/concepts/client) — the type-safe HTTP client that talks to this handler.
+- [CLI](/docs/concepts/cli) — generate portable types from your app definition.

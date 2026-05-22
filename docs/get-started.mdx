@@ -1,0 +1,19 @@
+---
+title: "Get Started"
+description: "Get Started pages for understanding and using create-better-agent."
+order: 10
+---
+
+# Get Started
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. These three pages take you from zero to a running agent with a typed client and a connected UI.
+
+## Where to begin
+
+**[Introduction](/docs/get-started/introduction)** explains what Better Agent is, why it exists, and what you get from its typed agent model, multi-provider support, plugin system, and first-class persistence.
+
+**[Installation](/docs/get-started/installation)** covers the two paths into a project. The automatic path runs `npm create better-agent` (or the `pnpm`, `yarn`, or `bun` equivalent), detects your framework, and writes the Better Agent files, provider choices, and required environment variables for you. The manual path walks through installing `@better-agent/core` and `@better-agent/providers`, creating an app with `betterAgent()`, and exporting the handler.
+
+**[Usage](/docs/get-started/usage)** shows how to build the three pieces of a working app — a `server.ts` that defines and exports the Better Agent app, a `client.ts` that creates a typed HTTP client from the server type, and a UI component that connects using `useAgent()` or `createAgentChat()` from the framework adapter of your choice.
+
+After these three pages, the [Concepts](/docs/concepts/agent) section covers agents, tools, providers, persistence, plugins, and the CLI in depth.

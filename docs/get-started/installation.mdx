@@ -1,0 +1,126 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your TypeScript project."
+order: 20
+---
+
+# Installation
+
+Better Agent is split into focused packages so you only install what your project needs.
+
+| Package | What it provides |
+|---|---|
+| `@better-agent/core` | Agents, tools, events, and runtime primitives |
+| `@better-agent/client` | Typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact |
+| `@better-agent/providers` | Adapters for model APIs such as OpenAI, Anthropic, and xAI |
+| `@better-agent/plugins` | Guards, lifecycle hooks, middleware, and runtime extensions |
+| `@better-agent/adapters` | Framework adapters for Express and Fastify |
+
+The CLI (`create-better-agent`) handles type generation for typed client packages and app definitions.
+
+## Automatic setup
+
+The fastest way to get started is `create better-agent`. It detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required environment variables and package entries.
+
+```bash title="npm"
+npm create better-agent
+```
+
+```bash title="pnpm"
+pnpm create better-agent
+```
+
+```bash title="yarn"
+yarn create better-agent
+```
+
+```bash title="bun"
+bun create better-agent
+```
+
+## Manual setup
+
+Use the manual path when you want full control over the project structure or prefer to integrate Better Agent by hand.
+
+### 1. Create your project
+
+Start from a TypeScript project. If you do not have one yet:
+
+```bash title="npm"
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+```bash title="pnpm"
+mkdir my-agent && cd my-agent
+pnpm init
+pnpm add typescript -D
+pnpm exec tsc --init
+```
+
+```bash title="yarn"
+mkdir my-agent && cd my-agent
+yarn init -y
+yarn add typescript -D
+yarn tsc --init
+```
+
+```bash title="bun"
+mkdir my-agent && cd my-agent
+bun init
+```
+
+### 2. Install the packages
+
+Install the core packages first. Add `@better-agent/client` when you need a typed frontend.
+
+```bash title="npm"
+npm install @better-agent/core @better-agent/providers
+```
+
+```bash title="pnpm"
+pnpm add @better-agent/core @better-agent/providers
+```
+
+```bash title="yarn"
+yarn add @better-agent/core @better-agent/providers
+```
+
+```bash title="bun"
+bun add @better-agent/core @better-agent/providers
+```
+
+### 3. Create the app
+
+Create a provider, define an agent, and export the Better Agent app.
+
+```ts title="server.ts"
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-5-mini"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: "dev-secret",
+});
+
+export default app;
+```
+
+The `betterAgent()` call produces both a programmatic API (`app.run()`, `app.stream()`) and a standard `Request → Response` HTTP handler you can mount in any framework.
+
+## Next step
+
+Continue to [Usage](/docs/get-started/usage) to add a typed client and connect a UI framework.

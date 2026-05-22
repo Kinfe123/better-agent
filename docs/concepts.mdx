@@ -1,0 +1,35 @@
+---
+title: "Concepts"
+description: "Core ideas and mental models that explain how Better Agent works."
+order: 50
+---
+
+# Concepts
+
+Better Agent is built around a small set of well-defined primitives that compose cleanly. Understanding each one makes the rest of the framework predictable: you define agents, register them in an app, expose the app over HTTP, and connect a typed client to it. Everything else — providers, plugins, persistence, type generation — plugs into that shape without changing it.
+
+The pages in this section cover each primitive in depth. Read them in the order that matches what you're building right now, or use this index to find the concept you need.
+
+## Agents and the app
+
+[Agent](/docs/concepts/agent) is where you start. An agent brings together a model, an optional instruction, a context schema, tools, and an output schema into one typed definition. You then register one or more agents in a `betterAgent()` call to create the app.
+
+[API](/docs/concepts/api) explains `betterAgent()` itself — the `agents`, `baseURL`, `secret`, `plugins`, `persistence`, and `tools` fields — and how the resulting app exposes both a programmatic API (`app.run()`, `app.stream()`) and a standard HTTP handler you can mount in any framework.
+
+## Connecting a client
+
+[Client](/docs/concepts/client) covers `createClient`, the typed HTTP client that talks to a Better Agent server. When your client and server share the same TypeScript project, pass `typeof app` directly. When they live in separate packages, generate a portable type declaration instead.
+
+[TypeScript](/docs/concepts/typescript) explains how that type inference chain works end-to-end: from `defineAgent` through `betterAgent` to `createClient`, keeping agent names, context schemas, structured output, and client tool handlers aligned without runtime overhead.
+
+## Providers
+
+[Providers](/docs/concepts/providers) explains how Better Agent connects to model APIs. A provider gives you typed models with declared capabilities; the framework uses those capabilities to gate features like tools, structured output, and modalities at the type level.
+
+## Type generation
+
+[CLI](/docs/concepts/cli) covers the `better-agent` CLI, which generates a `.d.ts` file from your app's agent definitions. Use it when your client is in a separate package and a direct type import is not possible. The generated file carries typed agent names, context schemas, and tool contracts without importing any server code.
+
+## Errors
+
+[Errors](/docs/concepts/errors) documents `BetterAgentError`, the standard error type across the framework. Each error carries a stable `code`, an HTTP `status`, a `retryable` flag, and structured `context` fields so you can handle failures programmatically.

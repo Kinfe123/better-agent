@@ -1,0 +1,61 @@
+---
+title: "create-better-agent"
+description: "Initialize Better Agent in an existing app"
+---
+
+# create-better-agent
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. You define agents with models, tools, context schemas, and output schemas once, and the types flow end-to-end from server definition to client call — without importing server code on the client.
+
+## What you can build
+
+An agent app in Better Agent has a clear shape: a server that registers agents and exposes an HTTP handler, a typed client that talks to it, and optional framework hooks for React, Vue, Svelte, Solid, and Preact. The framework fits into an existing project — you mount the HTTP handler wherever your stack already handles requests.
+
+Key capabilities, grounded in the framework's design:
+
+- **Typed agents.** Define an agent once and keep its model, tools, context, and output schema typed together.
+- **Type-safe client.** Infer agent names, run inputs, structured output, and tool handlers directly from your server app.
+- **Multi-provider.** Use the same app shape across OpenAI, Anthropic, and xAI instead of rewriting runtime code per provider.
+- **Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints without rebuilding the core loop.
+- **Event-driven streaming.** Listen to structured events for messages, tool calls, approvals, and streaming state as runs progress.
+- **Durable runs.** Wire in minimal persistence stores when you need resumable conversations or replayable streams.
+- **Human in the loop.** Pause sensitive tool calls for approval and continue the run after a user decision.
+- **Structured output.** Validate model responses against a schema and get typed data back from the run result.
+
+## Scaffold a new app or patch an existing one
+
+The fastest path is the `create-better-agent` CLI. Run it with your preferred package manager from the directory you want to patch:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+To patch an existing project instead of scaffolding a new one, pass `--mode patch`:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+The CLI detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required env vars and package entries. Supported frameworks are `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+If you prefer to install and configure manually, see [Installation](/docs/get-started/installation).
+
+## Where to go next
+
+- [Installation](/docs/get-started/installation) — prerequisites, manual package setup, and first app skeleton.
+- [Usage](/docs/get-started/usage) — build a small server, create a typed client, and connect a UI.
+- [Agent](/docs/concepts/agent) — understand the core building block: models, instructions, tools, and context.
+- [Providers](/docs/concepts/providers) — connect Better Agent to OpenAI, Anthropic, or xAI.
+- [TypeScript](/docs/concepts/typescript) — how type inference flows from server definition to client call.

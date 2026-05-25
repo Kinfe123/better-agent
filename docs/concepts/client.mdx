@@ -1,0 +1,90 @@
+---
+title: "Client"
+description: "Type-safe HTTP client for Better Agent servers."
+order: 4
+---
+
+# Client
+
+The Better Agent client is a typed HTTP client for talking to a Better Agent server. It gives you full inference for agent names, context schemas, tool contracts, and structured output — with zero runtime overhead.
+
+## Create a client
+
+Import your server app type to get full inference.
+
+```ts
+// client.ts
+import { createClient } from "@better-agent/client";
+import type { app } from "./server";
+
+const client = createClient<typeof app>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your client and server are in separate packages, use the generated type from the CLI instead.
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { BAClientApp } from "./better-agent.types";
+
+const client = createClient<BAClientApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `baseURL` | Better Agent API base URL. Required. |
+| `secret` | Bearer token sent with every request. Required. |
+| `headers` | Default headers merged into every request. |
+| `fetch` | Custom fetch implementation. |
+
+## run
+
+Runs an agent and waits for the final result.
+
+```ts
+const result = await client.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+## stream
+
+Streams agent execution and returns an async iterable of events.
+
+```ts
+const stream = client.stream("assistant", {
+  input: "Summarize this document...",
+});
+
+for await (const event of stream.events) {
+  if (event.type === "TEXT_MESSAGE_CONTENT") {
+    process.stdout.write(event.delta);
+  }
+}
+```
+
+## Type safety
+
+The type parameter on `createClient` carries your full server definition. Agent names produce compile errors if you mistype them. The `context` field is typed against the agent's `contextSchema`. `result.structured` is inferred from the agent's `outputSchema`. Tool handler inputs are inferred from the tool's schema.
+
+```ts
+// @ts-expect-error — "asistant" is not a valid agent name
+await client.run("asistant", { input: "Hello" });
+
+// context is fully typed from supportAgent's contextSchema
+await client.run("support", {
+  input: "Help me",
+  context: { userId: "user_123", plan: "pro" },
+});
+```
+
+For the full inference story across same-project and separate-package setups, see [TypeScript](/docs/concepts/typescript).

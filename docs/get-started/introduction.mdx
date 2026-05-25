@@ -1,0 +1,28 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven agent apps. It gives you the primitives to define agents, connect them to models and tools, expose them over HTTP, and call them from a typed client — all without adopting a fixed runtime, database, or frontend.
+
+## Why it exists
+
+Most agent libraries make you choose between type safety and framework flexibility. Better Agent starts from the opposite assumption: your agent definitions are the source of truth, and every downstream artifact — the HTTP handler, the client, the context schema, the structured output — is derived from them automatically.
+
+Four principles shaped the design:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack — your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## What you get
+
+Typed Agents let you define a model, instruction, context schema, tools, and output schema once, and keep them typed together. The Type-Safe Client infers agent names, inputs, outputs, and hooks directly from your server app. Multi-Provider support means you can swap OpenAI, Anthropic, or xAI without rewriting your runtime. Plugins add guards, lifecycle hooks, middleware, and custom endpoints without touching the core loop. Framework Agnostic mounting works in any server that handles a `Request` object. Event-Driven observation lets you listen to structured events for messages, tool calls, approvals, and streaming state. Durable Runs let you add minimal persistence stores when you need resumable, conversation-aware flows.
+
+## Where to go next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages and create your first app, then [Usage](/docs/get-started/usage) to add a typed client and UI. When you're ready to understand the core primitives, start with [Agents](/docs/concepts/agent).

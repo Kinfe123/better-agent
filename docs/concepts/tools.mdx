@@ -1,0 +1,74 @@
+---
+title: "Tools"
+description: "Let agents take structured actions."
+order: 6
+---
+
+# Tools
+
+Tools let agents do real work. Instead of guessing, the model calls your code through a structured contract with validated input. A tool starts as a shared contract. You then materialize it as a server tool, a client tool, or a hosted provider tool.
+
+## Define a tool
+
+Use `defineTool()` to create a contract with a name, description, and input schema. Better Agent accepts any Standard Schema library (Zod, Valibot, ArkType) or a raw JSON Schema object.
+
+```ts
+// tools.ts
+import { defineTool } from "@better-agent/core";
+import { z } from "zod";
+
+const getWeather = defineTool({
+  name: "get_weather",
+  description: "Get the current weather for a location",
+  schema: z.object({
+    location: z.string(),
+    unit: z.enum(["celsius", "fahrenheit"]),
+  }),
+});
+```
+
+## Server tools
+
+Use `.server()` when the tool should run on the server. The handler receives validated input and a context with `signal` and `emit`.
+
+```ts
+const getWeatherTool = getWeather.server(async ({ location, unit }, { signal }) => {
+  const res = await fetch(
+    `https://api.weather.example/${location}?unit=${unit}`,
+    { signal }
+  );
+  return res.json();
+});
+```
+
+Then add it to an agent:
+
+```ts
+const assistant = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+  tools: [getWeatherTool],
+});
+```
+
+Use `emit` to push custom events to the stream while the tool runs — useful for progress updates on long-running tools.
+
+## Client tools
+
+Use `.client()` when the tool should run on the user's device. The model calls it, Better Agent emits the call to the client, and the server waits for the client to return a result. Client tools do not execute on the server.
+
+```ts
+const showConfettiTool = defineTool({
+  name: "show_confetti",
+  description: "Shows a confetti animation in the UI",
+  schema: z.object({ color: z.string() }),
+}).client();
+```
+
+## Tool error handling
+
+When a server tool throws, the default behavior (`"return"`) sends the error back to the model so it can recover. Set `toolErrorMode: "throw"` on the agent to stop execution immediately instead.
+
+## Next steps
+
+To require a human decision before a tool runs, see [Human in the Loop](/docs/concepts/hil). To connect agents to external tools via MCP, see [MCP](/docs/concepts/mcp).

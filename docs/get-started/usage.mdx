@@ -1,0 +1,97 @@
+---
+title: "Usage"
+description: "Create your first agent app."
+order: 3
+---
+
+# Usage
+
+This page walks you through building a minimal Better Agent app: a server with one agent, a typed client, and a React UI that sends messages and shows replies.
+
+## Define the server
+
+Create a Better Agent app with one agent. The `betterAgent()` call produces both a programmatic API (`run`, `stream`) and a standard HTTP handler you can mount in any framework.
+
+```ts
+// server.ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-4o-mini"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: "dev-secret",
+});
+
+export default app;
+```
+
+## Create a typed client
+
+Import the server app type to get full inference for agent names, context, output, and tool handlers.
+
+```ts
+// client.ts
+import { createClient } from "@better-agent/client";
+import type app from "./server";
+
+export const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: "dev-secret",
+});
+```
+
+> **Note:** When your client and server live in separate packages, use the CLI to generate a portable `.d.ts` instead. See [CLI](/docs/concepts/cli).
+
+## Connect the UI
+
+Use `useAgent` from the React adapter to wire up the chat loop.
+
+```tsx
+// src/App.tsx
+import { useState } from "react";
+import { useAgent } from "@better-agent/client/react";
+import { client } from "./client";
+
+export default function Page() {
+  const [input, setInput] = useState("");
+
+  const { messages, status, sendMessage } = useAgent(client, {
+    agent: "helloAgent",
+  });
+
+  return (
+    <div>
+      <ul>
+        {messages.map((message) => (
+          <li key={message.localId}>
+            <strong>{message.role}:</strong>{" "}
+            {message.parts
+              .map((p) => (p.type === "text" ? p.text : ""))
+              .join("")}
+          </li>
+        ))}
+      </ul>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button
+        onClick={() => { sendMessage(input); setInput(""); }}
+        disabled={status === "streaming"}
+      >
+        Send
+      </button>
+    </div>
+  );
+}
+```
+
+From here, read [Agent](/docs/concepts/agent) to understand the full set of options on `defineAgent`, or [Tools](/docs/concepts/tools) to let your agent call real code.

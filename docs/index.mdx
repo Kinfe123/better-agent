@@ -1,0 +1,23 @@
+---
+title: "Introduction"
+description: "A TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 0
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven agent apps that fit into the stack you already use. It gives you typed agents, a type-safe client, first-class persistence, and a plugin system — without locking you into a fixed runtime, database, or frontend framework.
+
+The framework works by letting you define agents once and keeping every downstream contract — agent names, context schemas, tool inputs, structured output — inferred from those definitions. Your client never drifts from your server because it can't: the types are the same object.
+
+Better Agent mounts on any framework that speaks the Fetch standard. Use Next.js App Router, Remix, SvelteKit, TanStack Start, Astro, Nuxt, SolidStart, Hono, Express, Fastify, Elysia, or NestJS — the HTTP handler is just `Request → Response`.
+
+## Get started
+
+If you're new, run the create CLI to scaffold a project in under a minute:
+
+```bash
+npm create better-agent
+```
+
+Then read [Installation](/docs/get-started/installation) for the full setup walkthrough, and [Usage](/docs/get-started/usage) to wire up a server, typed client, and UI. When you're ready to go deeper, the [Concepts](/docs/concepts) section explains how agents, tools, providers, events, and persistence fit together.

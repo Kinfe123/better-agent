@@ -1,0 +1,67 @@
+---
+title: "Events"
+description: "Observe what happens during an agent run in real time."
+order: 7
+---
+
+# Events
+
+Events stream what happens during a run as it happens. Every event has a `type` and a `timestamp`. Most apps handle only a small subset — typically `TEXT_MESSAGE_CONTENT` for streaming text and `RUN_FINISHED` for final state.
+
+## Consuming events
+
+### Streaming
+
+Use `stream.events` to iterate over events as they arrive.
+
+```ts
+const stream = await app.stream("assistant", {
+  input: "What's the weather in Tokyo?",
+});
+
+for await (const event of stream.events) {
+  switch (event.type) {
+    case "TEXT_MESSAGE_CONTENT":
+      process.stdout.write(event.delta);
+      break;
+    case "TOOL_CALL_RESULT":
+      console.log("Tool result:", event.result);
+      break;
+    case "RUN_FINISHED":
+      console.log("Done");
+      break;
+  }
+}
+```
+
+The `stream` object also exposes `runId` and a `result` promise for the final run result.
+
+### onEvent callback
+
+Use `onEvent` on run options when you don't need the full stream handle.
+
+```ts
+await app.run("assistant", {
+  input: "Summarize this document...",
+  onEvent: (event) => {
+    if (event.type === "STEP_FINISH") {
+      console.log(`Step ${event.stepIndex + 1} done`);
+    }
+  },
+});
+```
+
+## Run lifecycle events
+
+These events mark the boundaries of a run:
+
+| Event | Description |
+| --- | --- |
+| `RUN_STARTED` | Run began. Includes `runId`, `agentName`, `conversationId`, and `runInput`. |
+| `RUN_FINISHED` | Run completed. Includes final output and finish reason. |
+| `STEP_FINISH` | One model step completed. Includes `stepIndex` and `terminationReason`. |
+| `TEXT_MESSAGE_CONTENT` | A text delta was emitted. Includes the `delta` string. |
+| `TOOL_CALL_RESULT` | A tool completed. Includes the result. |
+| `TOOL_APPROVAL_UPDATED` | A human-in-the-loop approval decision was made. |
+
+For approval-related events, see [Human in the Loop](/docs/concepts/hil).

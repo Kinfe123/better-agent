@@ -1,0 +1,66 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 10
+---
+
+# Installation
+
+You can add Better Agent to any TypeScript project automatically with the create CLI, or manually by installing the packages yourself.
+
+## Automatic setup
+
+The fastest path is the create CLI. It detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required env vars and package entries.
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`. If you're adding Better Agent to an existing project, use patch mode:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual setup
+
+Use manual setup when you want full control over the project structure.
+
+**1. Create a TypeScript project** if you don't have one already.
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages you need.**
+
+- `@better-agent/core` — agents, tools, events, and runtime primitives
+- `@better-agent/client` — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact
+- `@better-agent/providers` — adapters for OpenAI, Anthropic, and xAI
+- `@better-agent/plugins` — guards, lifecycle hooks, middleware, and runtime extensions
+- `@better-agent/cli` — type generation for typed client packages and app definitions
+
+**3. Set your provider API key.** At minimum you need one of the following depending on the model you choose:
+
+```env
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+XAI_API_KEY=...
+```
+
+**4. Verify the setup** by running the usage example from [Usage](/docs/get-started/usage). If your server starts and the agent responds, you're ready.

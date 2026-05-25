@@ -1,0 +1,57 @@
+---
+title: "Errors"
+description: "Understand Better Agent error codes, shapes, and recovery."
+order: 13
+---
+
+# Errors
+
+Better Agent uses `BetterAgentError` as the standard error type across the framework. It carries a stable `code` for programmatic handling so you can branch on specific failure modes without parsing message strings.
+
+## Server error shape
+
+`BetterAgentError` extends `Error` and adds structured fields.
+
+```ts
+import { BetterAgentError } from "@better-agent/shared/errors";
+
+try {
+  const result = await app.run("assistant", { input: "Hello" });
+} catch (error) {
+  if (error instanceof BetterAgentError) {
+    console.log(error.code);      // e.g. "VALIDATION_FAILED"
+    console.log(error.status);    // HTTP status code
+    console.log(error.retryable); // boolean
+    console.log(error.context);   // structured context object
+  }
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | Stable error code, such as `"VALIDATION_FAILED"`. |
+| `message` | `string` | Human-readable error message. |
+| `status` | `number` | HTTP status code. |
+| `title` | `string` | Short title, such as `"Unprocessable Entity"`. |
+| `type` | `string` | Docs URL for the error code. |
+| `retryable` | `boolean` | Whether retrying may help. |
+| `context` | `Record<string, unknown>` | Structured context about the failure. |
+
+## Client error shape
+
+On the client side, errors are normalized into `AgentClientError` — the same fields plus a `raw` field holding the original thrown value.
+
+```ts
+import { toAgentClientError } from "@better-agent/client";
+
+try {
+  await client.run("assistant", { input: "Hello" });
+} catch (error) {
+  const clientError = toAgentClientError(error);
+  console.log(clientError.code);
+  console.log(clientError.retryable);
+  console.log(clientError.raw);
+}
+```
+
+The client parses error responses from the server automatically. JSON bodies with `code`, `status`, `retryable`, `context`, `issues`, and `trace` fields are all preserved.

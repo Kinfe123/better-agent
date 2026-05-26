@@ -99,7 +99,7 @@ function ensurePackageManager(packageManager) {
   }
 }
 
-function run(command, args, cwd) {
+function run(command, args, cwd, options = {}) {
   console.log("[docs-cloud] " + command + " " + args.join(" ") + " (" + cwd + ")");
   const result = spawnSync(command, args, {
     cwd,
@@ -115,8 +115,14 @@ function run(command, args, cwd) {
   }
 
   if (result.status !== 0) {
+    if (options.exitOnFailure === false) {
+      return result.status || 1;
+    }
+
     process.exit(result.status || 1);
   }
+
+  return 0;
 }
 
 function installArgs(directory, packageManager) {
@@ -148,6 +154,14 @@ function installArgs(directory, packageManager) {
   return ["install"];
 }
 
+function relaxedInstallArgs(packageManager) {
+  if (packageManager === "pnpm") return ["install", "--no-frozen-lockfile"];
+  if (packageManager === "bun") return ["install"];
+  if (packageManager === "npm") return ["install"];
+  if (packageManager === "yarn") return ["install"];
+  return ["install"];
+}
+
 function scriptArgs(packageManager, scriptName) {
   if (packageManager === "npm") return ["run", scriptName];
   if (packageManager === "yarn") return [scriptName];
@@ -162,7 +176,20 @@ function installProject(directory, label) {
 
   const packageManager = detectPackageManager(directory);
   ensurePackageManager(packageManager);
-  run(packageManager, installArgs(directory, packageManager), directory);
+  const args = installArgs(directory, packageManager);
+  const status = run(packageManager, args, directory, { exitOnFailure: false });
+  if (status === 0) {
+    return;
+  }
+
+  const relaxedArgs = relaxedInstallArgs(packageManager);
+  if (args.join(" ") !== relaxedArgs.join(" ")) {
+    console.log("[docs-cloud] frozen install failed; retrying with " + relaxedArgs.join(" "));
+    run(packageManager, relaxedArgs, directory);
+    return;
+  }
+
+  process.exit(status);
 }
 
 function runProjectScript(directory, scriptName) {

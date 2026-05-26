@@ -1,0 +1,82 @@
+---
+title: "Events"
+description: "Observe what happens during an agent run in real time."
+order: 10
+---
+
+# Events
+
+Events stream what happens during a run as it happens. Every event has a `type` and a `timestamp`. Most apps only handle a small subset, but the full event stream is available when you need it.
+
+## Consuming events
+
+### Streaming
+
+Use `stream.events` to iterate over events as they arrive:
+
+```ts
+const stream = app.stream("assistant", {
+  input: "What's the weather in Tokyo?",
+});
+
+for await (const event of stream.events) {
+  switch (event.type) {
+    case "TEXT_MESSAGE_CONTENT":
+      process.stdout.write(event.delta);
+      break;
+    case "TOOL_CALL_RESULT":
+      console.log("Tool result:", event.result);
+      break;
+    case "RUN_FINISHED":
+      console.log("Done");
+      break;
+  }
+}
+```
+
+The `stream` object also exposes `runId` and a `result` promise for the final run result.
+
+### onEvent callback
+
+Use `onEvent` on run options when you don't need the full stream handle:
+
+```ts
+await app.run("assistant", {
+  input: "Summarize this document...",
+  onEvent: (event) => {
+    if (event.type === "STEP_FINISH") {
+      console.log(
+        `Step ${event.stepIndex + 1} done (${event.terminationReason ?? "continuing"})`
+      );
+    }
+  },
+});
+```
+
+## Run lifecycle events
+
+These events mark the boundaries of a run:
+
+| Event | Key Fields | Description |
+| --- | --- | --- |
+| `RUN_STARTED` | `runId`, `agentName`, `conversationId?`, `runInput` | Run began. |
+| `RUN_FINISHED` | `runId`, `finishReason`, `output` | Run completed successfully. |
+| the required value | `runId`, `error` | Run failed with an error. |
+| `STEP_FINISH` | `runId`, `stepIndex`, `terminationReason?` | A step in the agent loop finished. |
+
+## Tool events
+
+| Event | Key Fields | Description |
+| --- | --- | --- |
+| `TOOL_CALL_START` | `runId`, `toolCallId`, `toolName`, `input` | Model requested a tool call. |
+| `TOOL_CALL_RESULT` | `runId`, `toolCallId`, `toolName`, `result` | Tool handler returned a result. |
+| the required value | `runId`, `toolCallId`, `toolName` | Waiting for human approval. |
+| `TOOL_APPROVAL_UPDATED` | `runId`, `toolCallId`, `state` | Approval was granted, denied, or expired. |
+
+## Message events
+
+| Event | Description |
+| --- | --- |
+| `TEXT_MESSAGE_START` | A new text message began. |
+| `TEXT_MESSAGE_CONTENT` | A delta of text content arrived. Use `event.delta` to build the message incrementally. |
+| `TEXT_MESSAGE_END` | The text message is complete. |

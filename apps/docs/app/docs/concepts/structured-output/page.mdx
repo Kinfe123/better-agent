@@ -1,0 +1,86 @@
+---
+title: "Structured Output"
+description: "Get typed, validated responses from your agents."
+order: 14
+---
+
+# Structured Output
+
+Structured output lets you define a schema for the model's response. Better Agent parses the response as JSON, validates it against your schema, and returns a typed `structured` field on the run result.
+
+## Define an output schema
+
+Add `outputSchema` to your agent definition. The `schema` field accepts Zod, Valibot, ArkType, or raw JSON Schema:
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { z } from "zod";
+import { openai } from "./openai";
+
+const summaryAgent = defineAgent({
+  name: "summary",
+  model: openai.model("gpt-4o"),
+  instruction: "Summarize the given text in one paragraph.",
+  outputSchema: {
+    schema: z.object({
+      summary: z.string(),
+      wordCount: z.number(),
+    }),
+  },
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `schema` | The schema to validate the model's response against. Required. |
+| `name` | Name forwarded to providers that support named outputs. Defaults to `${agentName}Output`. |
+| `strict` | Enables strict mode where supported by the provider. |
+
+## Access the result
+
+When an agent has an `outputSchema`, the run result includes a typed `structured` field:
+
+```ts
+const result = await app.run("summary", {
+  input: "Summarize this article about climate change...",
+});
+
+console.log(result.structured.summary);
+console.log(result.structured.wordCount);
+```
+
+With streaming, access `structured` through the result promise after the stream completes:
+
+```ts
+const stream = app.stream("summary", {
+  input: "Summarize this article...",
+});
+
+for await (const event of stream.events) {
+  // process events
+}
+
+const result = await stream.result;
+console.log(result.structured.summary);
+```
+
+## Per-run override
+
+Use the `output` field on `run()` or `stream()` to override the agent's default schema for a single run:
+
+```ts
+const result = await app.run("summary", {
+  input: "Classify this support ticket...",
+  output: {
+    schema: z.object({
+      category: z.enum(["billing", "technical", "general"]),
+      priority: z.enum(["low", "medium", "high"]),
+    }),
+  },
+});
+
+console.log(result.structured.category);
+console.log(result.structured.priority);
+```
+
+The per-run `output` schema fully replaces the agent's default for that run, and the return type updates accordingly.

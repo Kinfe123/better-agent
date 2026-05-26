@@ -1,0 +1,85 @@
+---
+title: "Plugins"
+description: "Extend Better Agent with cross-agent behavior."
+order: 12
+---
+
+# Plugins
+
+Plugins add behavior that applies across your entire app: logging, auth, rate limiting, lifecycle hooks, and custom endpoints. Register them once at the app level and they apply to every agent automatically.
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import { rateLimitPlugin, loggingPlugin } from "@better-agent/plugins";
+
+export const app = betterAgent({
+  agents: [myAgent],
+  plugins: [
+    rateLimitPlugin({ windowMs: 60_000, max: 20 }),
+    loggingPlugin({ level: "info" }),
+  ],
+});
+```
+
+## Creating a plugin
+
+Use `definePlugin()` to create a custom plugin. Every plugin needs a unique `id`:
+
+```ts
+import { definePlugin } from "@better-agent/core";
+
+export const myPlugin = definePlugin({
+  id: "my-plugin",
+  // guards, onStep, onEvent, tools, endpoints
+});
+```
+
+## Guards
+
+Guards run before a request is processed. Return `null` to allow, or a `Response` to reject:
+
+```ts
+const workspaceAuth = definePlugin({
+  id: "workspace-auth",
+  guards: [
+    async ({ mode, agentName, request }) => {
+      const token = request.headers.get("authorization");
+      if (!token) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+      const workspace = await resolveWorkspace(token);
+      if (!workspace) {
+        return new Response("Invalid workspace", { status: 403 });
+      }
+      return null;
+    },
+  ],
+});
+```
+
+The guard context includes the request `mode` (`"run"`, `"stream"`, `"load_conversation"`, `"abort_run"`, `"resume_stream"`, or `"resume_conversation"`), the resolved `agentName`, the parsed `input`, and the raw `Request` object.
+
+## Lifecycle hooks
+
+Plugins can hook into every phase of the agent loop. All hooks run in plugin registration order, before the agent's own hooks.
+
+Use `onStep` to run before each step — you can mutate messages, set tool choice, filter active tools, or override the system instruction:
+
+```ts
+const contextInjector = definePlugin({
+  id: "context-injector",
+  onStep: async (ctx) => {
+    if (ctx.stepIndex === 0) {
+      ctx.updateMessages((messages) => [
+        ...messages,
+        {
+          role: "system",
+          content: `Current time: ${new Date().toISOString()}`,
+        },
+      ]);
+    }
+  },
+});
+```
+
+See [Auth](/docs/plugins/auth) for a ready-made auth plugin, and the other plugin pages for rate limiting, logging, IP allowlists, and sandboxed execution.

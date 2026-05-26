@@ -1,0 +1,112 @@
+---
+title: "Client"
+description: "Type-safe HTTP client for Better Agent servers."
+order: 8
+---
+
+# Client
+
+The Better Agent client is a typed HTTP client for talking to a Better Agent server. It gives you full inference for agent names, context schemas, tool contracts, and structured output — with zero runtime overhead.
+
+## Create a client
+
+Import your server app type directly when client and server share a project:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { app } from "./server";
+
+const client = createClient<typeof app>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When client and server are in separate packages, use the generated type from the CLI:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { BAClientApp } from "./better-agent.types";
+
+const client = createClient<BAClientApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `baseURL` | Better Agent API base URL. Required. |
+| `secret` | Bearer token sent with every request. Required. |
+| `headers` | Default headers merged into every request. |
+| `fetch` | Custom fetch implementation. |
+
+## Type safety
+
+The type parameter on `createClient` carries your full server definition. This gives you typed agent names with autocomplete, typed `context` validated against the agent's `contextSchema`, typed `structured` output inferred from the agent's `outputSchema`, and typed `toolHandlers` with input inferred from each tool's schema.
+
+```ts
+// Valid call — fully typed
+const result = await client.run("assistant", { input: "Hello" });
+
+// @ts-expect-error: "asistant" is not a valid agent name
+await client.run("asistant", { input: "Hello" });
+
+// Context is typed against the agent's contextSchema
+await client.run("support", {
+  input: "Help me",
+  context: { userId: "user_123", plan: "pro" },
+});
+
+// Structured output is inferred from the agent's outputSchema
+const summary = await client.run("summary", { input: "Summarize this..." });
+console.log(summary.structured.summary);
+console.log(summary.structured.wordCount);
+```
+
+## run
+
+Runs an agent and waits for the final result:
+
+```ts
+const result = await client.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+Per-request options let you pass an abort signal or override headers:
+
+```ts
+const controller = new AbortController();
+
+const result = await client.run(
+  "assistant",
+  { input: "Hello" },
+  {
+    signal: controller.signal,
+    headers: { "X-Request-Id": "req_abc" },
+  }
+);
+```
+
+## stream
+
+Stream agent execution and iterate over events as they arrive:
+
+```ts
+const stream = client.stream("assistant", {
+  input: "Write a short story.",
+});
+
+for await (const event of stream.events) {
+  if (event.type === "TEXT_MESSAGE_CONTENT") {
+    process.stdout.write(event.delta);
+  }
+}
+
+const result = await stream.result;
+```

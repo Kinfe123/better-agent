@@ -1,0 +1,90 @@
+---
+title: "TypeScript"
+description: "End-to-end type inference from server to client."
+order: 18
+---
+
+# TypeScript
+
+Better Agent keeps your server and client in sync through TypeScript. Agent names, run context, structured output, and client tool handlers are all inferred from your app definition. Use a direct app type import in the same project, or generate a portable type with the CLI when your client lives in a separate package.
+
+## What you get
+
+Each part of your app definition becomes a typed contract on the client:
+
+| Definition | Client Type |
+| --- | --- |
+| `agent.name` | String literal union for the `agent` parameter |
+| `agent.contextSchema` | Typed `context` field on `run()` and `stream()` input |
+| `agent.outputSchema` | Typed `structured` field on the run result |
+| Client tools (`.client()`) | Typed `toolHandlers` map with handler input inferred from the tool's schema |
+| `model.caps` | Capability-gated fields — `modalities`, `outputSchema`, and similar only appear when the model supports them |
+
+## Same project
+
+When your client and server share a TypeScript project, import the app type directly:
+
+```ts
+// server.ts
+import { defineAgent, betterAgent } from "@better-agent/core";
+import { z } from "zod";
+import { openai } from "./openai";
+
+const supportAgent = defineAgent({
+  name: "support",
+  model: openai.model("gpt-4o"),
+  contextSchema: z.object({
+    userId: z.string(),
+    plan: z.enum(["free", "pro"]),
+  }),
+  outputSchema: {
+    schema: z.object({
+      reply: z.string(),
+      sentiment: z.enum(["positive", "negative", "neutral"]),
+    }),
+  },
+});
+
+export const app = betterAgent({ agents: [supportAgent] });
+```
+
+```ts
+// client.ts
+import { createClient } from "@better-agent/client";
+import type { app } from "./server";
+
+const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: "dev-secret",
+});
+
+const result = await client.run("support", {
+  input: "Help me with my invoice",
+  context: { userId: "u_1", plan: "pro" },
+});
+
+console.log(result.structured.reply);     // typed as string
+console.log(result.structured.sentiment); // typed as "positive" | "negative" | "neutral"
+```
+
+## Separate packages
+
+When your client and server live in different packages or repos, use the CLI to generate a portable `.d.ts` file:
+
+```bash
+npx @better-agent/cli generate type --config ./server.ts
+```
+
+This produces a `better-agent.types.d.ts` file you import in your client package:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { BAClientApp } from "./better-agent.types";
+
+const client = createClient<BAClientApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+The generated file contains no runtime code — only type declarations. It is safe to commit to your client repo and update whenever your server agents change. See [CLI](/docs/concepts/cli) for the full generation options.

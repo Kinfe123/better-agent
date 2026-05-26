@@ -1,0 +1,21 @@
+---
+title: "Introduction"
+description: "A TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 0
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building agent apps that are typed end-to-end — from the model definition on your server to the `useAgent()` hook in your UI. It fits into the stack you already have: your existing database, auth system, and web framework. You don't adopt a new runtime; you mount Better Agent into it.
+
+The core idea is simple. You define an agent once, with its model, instructions, tools, context schema, and output schema. Better Agent carries those types through the HTTP layer so your client has full inference for agent names, context shapes, structured output, and client-side tool handlers — with zero runtime overhead.
+
+The framework ships as focused packages: `@better-agent/core` for the agent runtime, `@better-agent/client` for the typed HTTP client and UI hooks, `@better-agent/providers` for OpenAI, Anthropic, and xAI adapters, `@better-agent/plugins` for auth, rate limiting, logging, and sandboxing, and `@better-agent/cli` for generating portable type declarations.
+
+To scaffold a new app or add Better Agent to an existing one, run:
+
+```bash
+npm create better-agent
+```
+
+If you're starting fresh, head to [Installation](/docs/get-started/installation) for package setup, then [Usage](/docs/get-started/usage) for a working server, client, and UI in about thirty lines of code. The [Concepts](/docs/concepts) section covers the mental models you'll need once you're past the first run.

@@ -1,0 +1,63 @@
+---
+title: "Errors"
+description: "Understand Better Agent error codes, shapes, and recovery."
+order: 18
+---
+
+# Errors
+
+Better Agent uses `BetterAgentError` as the standard error type across the framework. It carries a stable `code` for programmatic handling so you can branch on error type without parsing message strings.
+
+## Server Error Shape
+
+`BetterAgentError` extends `Error` and adds structured fields:
+
+```ts
+import { BetterAgentError } from "@better-agent/shared/errors";
+
+try {
+  const result = await app.run("assistant", { input: "Hello" });
+} catch (error) {
+  if (error instanceof BetterAgentError) {
+    console.log(error.code);      // e.g. "VALIDATION_FAILED"
+    console.log(error.message);   // Human-readable description
+    console.log(error.status);    // HTTP status code
+    console.log(error.retryable); // Whether retrying may help
+    console.log(error.context);   // Additional structured context
+  }
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | Stable error code, such as `"VALIDATION_FAILED"`. |
+| `message` | `string` | Human-readable error message. |
+| `status` | `number` | HTTP status code. |
+| `title` | `string` | Short title, such as `"Unprocessable Entity"`. |
+| `type` | `string` | Docs URL for the error code. |
+| `retryable` | `boolean` | Whether retrying may help. |
+| `context` | `Record<string, unknown>` | Additional structured context for the error. |
+
+## Client Error Shape
+
+On the client side, errors are normalized into `AgentClientError`. It has the same fields plus a `raw` field holding the original thrown value:
+
+```ts
+import { toAgentClientError } from "@better-agent/client";
+
+try {
+  await client.run("assistant", { input: "Hello" });
+} catch (error) {
+  const clientError = toAgentClientError(error);
+  console.log(clientError.code);
+  console.log(clientError.message);
+  console.log(clientError.retryable);
+  console.log(clientError.raw); // Original thrown value
+}
+```
+
+The client parses error responses from the server automatically. JSON bodies with `code`, `detail`, `status`, `retryable`, `context`, `issues`, and `trace` fields are all preserved.
+
+## Retryable Errors
+
+Check `error.retryable` before deciding whether to retry a failed run. Transient errors like rate limits and timeouts set `retryable: true`. Validation failures and auth errors set it to `false`.

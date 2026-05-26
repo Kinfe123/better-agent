@@ -1,0 +1,38 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It gives you the primitives to define agents, connect them to model APIs, expose them over HTTP, and call them from a type-safe client — all without locking you into a specific runtime or deployment platform.
+
+## Why It Exists
+
+Most agent frameworks make you choose between type safety and flexibility. Better Agent is built around four convictions:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack, including your application, database, and auth system.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be straightforward with first-class persistence support.
+
+## What You Get
+
+**Typed agents.** Define an agent once and keep its model, tools, context, and output schema typed together. Changes on the server surface as type errors on the client immediately.
+
+**Type-safe client.** The `createClient` function takes your server app's type as a parameter and infers agent names, context shapes, structured output, and client tool handlers with no code generation at runtime.
+
+**Multi-provider.** Use the same app shape across OpenAI, Anthropic, and xAI instead of rewriting your runtime for each provider.
+
+**Framework agnostic.** The HTTP handler is a standard `Request → Response` function. Mount it in Next.js, Remix, SvelteKit, Astro, Nuxt, TanStack Start, SolidStart, React Router, Express, Fastify, Hono, Elysia, or NestJS.
+
+**Event driven.** Every run emits structured events — messages, tool calls, approvals, streaming state — as it progresses. Subscribe to the stream or use the `onEvent` callback.
+
+**Durable runs.** Add minimal persistence stores when you need resumable streams and conversation history. Skip them entirely for stateless flows.
+
+**Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints once at the app level and they apply to every agent.
+
+## Where to Go Next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages and your first app, or jump straight to [Usage](/docs/get-started/usage) if you want to see working code first. The [Concepts](/docs/concepts) section is there when you're ready to understand the primitives deeply.

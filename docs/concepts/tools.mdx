@@ -1,0 +1,75 @@
+---
+title: "Tools"
+description: "Let agents take structured actions."
+order: 10
+---
+
+# Tools
+
+Tools let agents do work. Instead of guessing, the model calls your code through a structured contract with validated input. A tool starts as a shared contract. You then materialize it as a server tool, a client tool, or a hosted provider tool.
+
+## Define a Tool
+
+Use `defineTool()` to create a contract with a name, description, and input schema. Better Agent accepts any schema that follows the Standard Schema spec (Zod, Valibot, ArkType) as well as raw JSON Schema.
+
+```ts
+import { defineTool } from "@better-agent/core";
+import { z } from "zod";
+
+const getWeather = defineTool({
+  name: "get_weather",
+  description: "Get the current weather for a location",
+  schema: z.object({
+    location: z.string(),
+    unit: z.enum(["celsius", "fahrenheit"]),
+  }),
+});
+```
+
+## Server Tools
+
+Use `.server()` when the tool should run on the server. The handler receives validated input and a context with `signal` and `emit`.
+
+```ts
+const getWeatherTool = getWeather.server(async ({ location, unit }, { signal }) => {
+  const res = await fetch(
+    `https://api.weather.example/${location}?unit=${unit}`,
+    { signal }
+  );
+  return res.json();
+});
+```
+
+Then add it to an agent:
+
+```ts
+const assistant = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+  tools: [getWeatherTool],
+});
+```
+
+Use `emit` inside a server tool handler to send custom events to the stream while the tool runs.
+
+## Client Tools
+
+Use `.client()` when the tool should run on the user's device. The model calls it, Better Agent emits the call to the client, and the server waits for the client to return a result.
+
+```ts
+const showConfettiTool = defineTool({
+  name: "show_confetti",
+  description: "Shows a confetti animation in the UI",
+  schema: z.object({ color: z.string() }),
+}).client();
+```
+
+Client tools are model-callable like server tools. Better Agent does not execute them on the server — it waits for the client to submit a result. Wire up handlers through the `toolHandlers` option on `useAgent()` or `client.stream()`.
+
+## Approval
+
+Some tools should pause and wait for a human decision before running. Set `approval: { required: true }` on the tool contract, or use `resolve` for dynamic approval based on runtime input. See [Human in the Loop](/docs/concepts/hil) for the full approval API.
+
+## Error Handling
+
+When a tool fails, the default behavior sends the error back to the model so it can recover. To stop the run immediately on any tool error, set `toolErrorMode: "throw"` on the agent. For per-tool recovery logic, use the `onToolError` handler.

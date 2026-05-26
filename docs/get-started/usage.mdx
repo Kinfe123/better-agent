@@ -1,0 +1,102 @@
+---
+title: "Usage"
+description: "Create your first agent app."
+order: 3
+---
+
+# Usage
+
+This page builds a minimal Better Agent app: a server that registers one agent, a typed client, and a React UI component that talks to it. The whole setup fits in three files.
+
+## Define the Server
+
+Create a Better Agent app with one agent in `server.ts`:
+
+```ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-4o-mini"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+export const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET,
+});
+
+export default app;
+```
+
+## Create a Typed Client
+
+Create a typed client from the server app type so agent names, inputs, outputs, and tools stay aligned with your backend:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type app from "./server";
+
+export const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your client and server are in separate packages, generate a portable `.d.ts` with the CLI instead of importing the server type directly. See [TypeScript](/docs/concepts/typescript) for that flow.
+
+## Connect the UI
+
+Use `useAgent` from the React adapter to manage messages, status, and streaming:
+
+```tsx
+import { useState } from "react";
+import { useAgent } from "@better-agent/client/react";
+import { client } from "./client";
+
+export default function Page() {
+  const [input, setInput] = useState("");
+
+  const { messages, status, sendMessage } = useAgent(client, {
+    agent: "helloAgent",
+  });
+
+  return (
+    <div>
+      <ul>
+        {messages.map((message) => (
+          <li key={message.localId}>
+            <strong>{message.role}:</strong>{" "}
+            {message.parts
+              .map((p) => (p.type === "text" ? p.text : ""))
+              .join("")}
+          </li>
+        ))}
+      </ul>
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+      <button
+        onClick={() => {
+          sendMessage(input);
+          setInput("");
+        }}
+      >
+        Send
+      </button>
+      <p>Status: {status}</p>
+    </div>
+  );
+}
+```
+
+Framework adapters for Vue, Svelte, Solid, and Preact follow the same shape — import from `@better-agent/client/vue`, `@better-agent/client/svelte`, and so on.
+
+From here, read [Agent](/docs/concepts/agent) to understand the core building block, [Tools](/docs/concepts/tools) to give your agent the ability to take actions, or [Providers](/docs/concepts/providers) to connect a different model API.

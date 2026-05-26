@@ -1,0 +1,35 @@
+---
+title: "Concepts"
+description: "Core ideas and mental models behind Better Agent."
+order: 4
+---
+
+# Concepts
+
+This section covers the primitives and mental models that underpin every Better Agent app. You don't need to read everything before you start, but you'll want these pages close by as your app grows.
+
+**[Agent](/docs/concepts/agent)** is the core unit of behavior. It brings together a model, instructions, tools, context schema, and output schema into one typed definition.
+
+**[API](/docs/concepts/api)** covers the `betterAgent()` app object — how to configure it, mount it as an HTTP handler, and call agents programmatically via `run()` and `stream()`.
+
+**[Client](/docs/concepts/client)** is the typed HTTP client. It infers agent names, context, structured output, and tool handler shapes directly from your server app type.
+
+**[TypeScript](/docs/concepts/typescript)** explains how type inference flows from server to client — both in the same project and across separate packages using the CLI.
+
+**[Tools](/docs/concepts/tools)** let agents take structured actions. A tool can run on the server, on the client device, or as a hosted provider tool.
+
+**[Events](/docs/concepts/events)** stream what happens during a run in real time — messages, tool calls, approvals, and lifecycle markers.
+
+**[Providers](/docs/concepts/providers)** connect Better Agent to model APIs. Each provider gives you typed models with declared capabilities.
+
+**[Structured Output](/docs/concepts/structured-output)** lets you define a schema for the model's response and get a typed, validated result back.
+
+**[Persistence](/docs/concepts/persistence)** stores conversation state across runs for durable conversations, stream resumption, and active-run tracking.
+
+**[Plugins](/docs/concepts/plugins)** add cross-agent behavior — logging, auth, rate limiting, lifecycle hooks, and custom endpoints — registered once at the app level.
+
+**[Human in the Loop](/docs/concepts/hil)** pauses execution and waits for a human approval decision before a sensitive tool runs.
+
+**[MCP](/docs/concepts/mcp)** connects agents to external tools and data through the Model Context Protocol.
+
+**[Errors](/docs/concepts/errors)** documents the `BetterAgentError` shape, stable error codes, and how errors surface on both server and client.

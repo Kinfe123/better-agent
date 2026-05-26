@@ -1,0 +1,78 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your project."
+order: 2
+---
+
+# Installation
+
+Install Better Agent in any TypeScript project. The automatic path uses the `create-better-agent` CLI to scaffold or patch your project. The manual path lets you install and wire up packages by hand.
+
+## Automatic
+
+Run the create command from your project root:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI detects your framework, generates the Better Agent files, prompts you to pick providers and plugins, and writes the required environment variables and package entries. Supported frameworks are `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+To add Better Agent to an existing project without creating new pages, use `--mode patch`:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual
+
+Use the manual path when you want full control over the project structure.
+
+**1. Create a TypeScript project** if you don't have one:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages:**
+
+- `@better-agent/core` — agents, tools, events, and runtime primitives
+- `@better-agent/client` — typed HTTP client and framework hooks for React, Vue, Svelte, Solid, and Preact
+- `@better-agent/providers` — adapters for OpenAI, Anthropic, and xAI
+- `@better-agent/plugins` — guards, lifecycle hooks, middleware, and extensions
+- `@better-agent/cli` — type generation for cross-package client setups
+
+**3. Configure environment variables.** Required variables depend on which provider you use:
+
+```bash
+# Required for your chosen provider
+OPENAI_API_KEY=sk-...
+# or
+ANTHROPIC_API_KEY=sk-ant-...
+# or
+XAI_API_KEY=xai-...
+
+# Used by your Better Agent app for HTTP route auth
+BETTER_AGENT_SECRET=your-secret
+```
+
+**4. Verify the setup** by starting your server and confirming the Better Agent handler responds at the `baseURL` you configured.
+
+## Next steps
+
+Go to [Usage](/docs/get-started/usage) to build your first agent app with a server, typed client, and UI.

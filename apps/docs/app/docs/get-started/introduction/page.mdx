@@ -1,0 +1,32 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven agent apps. It gives you end-to-end type safety from agent definitions to client calls, first-class persistence, and a plugin system for reusable cross-agent behavior — all without locking you into a fixed application framework or runtime.
+
+## Why it exists
+
+Most agent frameworks require you to adopt a new application model. Better Agent is designed to fit into the project you already have. It runs on any server that handles a `Request` object, which means Next.js, SvelteKit, TanStack Start, Remix, Astro, Nuxt, SolidStart, React Router, Express, Fastify, Hono, Elysia, and more.
+
+Type safety between server and client is a first-class concern, not an afterthought. Every agent definition — its name, context schema, output schema, and tool contracts — becomes a typed constraint on every client call.
+
+## Core design
+
+Better Agent is built around four ideas:
+
+- **Typed agents.** Define an agent once with a model, instructions, context schema, output schema, and tools. The framework keeps all of those typed together and propagates them to the client.
+- **Framework-agnostic HTTP.** The `betterAgent()` app exposes a standard `Request → Response` handler that mounts in any web-standard server.
+- **Plugin system.** Add guards, lifecycle hooks, middleware, logging, rate limiting, and custom endpoints once at the app level. They apply to every agent automatically.
+- **First-class persistence.** Bring your own database. Better Agent defines small store contracts (conversation, stream, runtime state) that map cleanly to your existing tables.
+
+## Supported providers
+
+Better Agent ships provider adapters for OpenAI, Anthropic, and xAI. Every provider exposes typed models with declared capabilities — tools, structured output, and modalities only appear on a model when the provider and model actually support them.
+
+## Where to go next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages in your project, then [Usage](/docs/get-started/usage) to build a working app with a typed client and UI. After that, [Concepts](/docs/concepts) covers each primitive in depth.

@@ -1,0 +1,76 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your project."
+order: 2
+---
+
+# Installation
+
+Install Better Agent in your TypeScript project using the `create` CLI for automatic setup, or by adding packages manually.
+
+## Automatic
+
+The `create` CLI is the fastest way to get started. It detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required environment variables and package entries.
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+To add Better Agent to an existing project instead of creating a new one:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+The CLI supports the following frameworks: `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+## Manual
+
+Use manual setup when you want full control over the project structure.
+
+**Step 1 — Create a TypeScript project** (skip if you already have one):
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**Step 2 — Install the packages you need:**
+
+```bash
+npm install @better-agent/core @better-agent/client @better-agent/providers
+```
+
+Install `@better-agent/plugins` when you need auth, rate limiting, logging, or sandbox support. Install `@better-agent/cli` as a dev dependency for type generation.
+
+```bash
+npm install @better-agent/plugins
+npm install -D @better-agent/cli
+```
+
+**Step 3 — Set up your environment variables.** At minimum you need an API key for your chosen model provider and an app secret:
+
+```env
+OPENAI_API_KEY=sk-...
+BETTER_AGENT_SECRET=your-secret
+```
+
+> **Note:** `BETTER_AGENT_SECRET` is the bearer token that guards your Better Agent HTTP routes. Keep it out of version control.
+
+## Next steps
+
+Once the packages are installed, go to [Usage](/docs/get-started/usage) to build your first agent, typed client, and UI.

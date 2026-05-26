@@ -1,0 +1,86 @@
+---
+title: "Client"
+description: "Type-safe HTTP client for Better Agent servers."
+order: 8
+---
+
+# Client
+
+The Better Agent client is a typed HTTP client for talking to a Better Agent server. It gives you full inference for agent names, context schemas, tool contracts, and structured output — with zero runtime overhead.
+
+## Create a Client
+
+Import your server app type to get full inference.
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { app } from "./server";
+
+const client = createClient<typeof app>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your client and server are in separate packages, use the generated type from the CLI instead:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { BAClientApp } from "./better-agent.types";
+
+const client = createClient<BAClientApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `baseURL` | Better Agent API base URL. Required. |
+| `secret` | Bearer token sent with every request. Required. |
+| `headers` | Default headers merged into every request. |
+| `fetch` | Custom fetch implementation for proxies or test mocks. |
+
+## run
+
+Runs an agent and waits for the final result.
+
+```ts
+const result = await client.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+Per-request options override headers, pass an abort signal, or observe the raw response:
+
+```ts
+const controller = new AbortController();
+
+const result = await client.run("assistant", { input: "Hello" }, {
+  signal: controller.signal,
+  headers: { "X-Request-Id": "req_abc" },
+  onResponse: (response) => console.log("Status:", response.status),
+});
+```
+
+## Type Safety
+
+The type parameter on `createClient` carries your full server definition, giving you typed agent names (autocomplete and compile errors for typos), typed `context` validated against each agent's `contextSchema`, a typed `structured` field on results, and typed `toolHandlers` when client tools are present.
+
+```ts
+// TypeScript catches the typo at compile time
+// @ts-expect-error "asistant" is not a valid agent name
+await client.run("asistant", { input: "Hello" });
+
+// context is typed from the agent's contextSchema
+await client.run("support", {
+  input: "Help me",
+  context: { userId: "user_123", plan: "pro" },
+});
+```
+
+See [TypeScript](/docs/concepts/typescript) for the full picture of what the type system infers.

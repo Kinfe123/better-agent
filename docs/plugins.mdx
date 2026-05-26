@@ -1,0 +1,35 @@
+---
+title: "Plugins"
+description: "Ready-to-use plugins for auth, logging, rate limiting, IP allowlisting, and sandboxing."
+order: 19
+---
+
+# Plugins
+
+Better Agent ships a set of production-ready plugins in `@better-agent/plugins`. Register any combination of them in your `betterAgent()` app and they apply to every agent.
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import { authPlugin, loggingPlugin, rateLimitPlugin } from "@better-agent/plugins";
+
+export const app = betterAgent({
+  agents: [myAgent],
+  plugins: [
+    authPlugin({ apiKeys: [process.env.BETTER_AGENT_API_KEY!] }),
+    rateLimitPlugin({ windowMs: 60_000, max: 100 }),
+    loggingPlugin(),
+  ],
+});
+```
+
+**[Auth](/docs/plugins/auth)** blocks requests unless they carry a valid API key. Supports static key lists, custom headers, and fully custom validation logic.
+
+**IP Allowlist** blocks requests unless they come from an allowed IP address or CIDR range. Works with direct connections and trusted-proxy setups.
+
+**Rate Limit** limits each agent to a configured number of calls per time window. Supports per-user bucketing and shared storage for multi-instance deployments.
+
+**Logging** emits structured runtime logs for requests, events, model calls, tools, and saves. Sensitive headers are redacted by default.
+
+**Sandbox** gives agents a real execution environment — shell commands, file I/O, and port exposure — using E2B or Daytona as the backend. Useful for coding agents and infrastructure workflows.
+
+For the plugin authoring API — guards, lifecycle hooks, endpoints — see [Plugins](/docs/concepts/plugins) in the Concepts section.

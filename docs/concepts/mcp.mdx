@@ -1,0 +1,84 @@
+---
+title: "MCP"
+description: "Use MCP to connect agents to external tools and data."
+order: 17
+---
+
+# MCP
+
+The Model Context Protocol (MCP) is an open standard for connecting agents to external tools, resources, and prompts. Better Agent includes an MCP client that speaks HTTP and SSE transports. You can convert remote MCP tools into Better Agent server tools and add them to an agent, or use the raw client for direct access to tools, resources, and prompts.
+
+## Add MCP Tools to an Agent
+
+Use `createMCPClient()` to connect, `listTools()` to discover tools, and `convertMCPTools()` to turn them into Better Agent server tools:
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createMCPClient, convertMCPTools } from "@better-agent/core/mcp";
+import { openai } from "./openai";
+
+const docsAgent = defineAgent({
+  name: "docs",
+  model: openai.model("gpt-4o"),
+  tools: async () => {
+    const client = await createMCPClient({
+      transport: { type: "http", url: "https://mcp.context7.com/mcp" },
+    });
+    const listed = await client.listTools();
+    return convertMCPTools(client, listed.tools, { prefix: "docs" });
+  },
+});
+```
+
+Each MCP tool becomes a server tool that proxies execution back to the MCP server. The optional `prefix` namespaces tool names to avoid collisions.
+
+## Cache the Client with lazyTools
+
+The example above creates a new client on every run. Use `lazyTools()` to cache a client across runs and control its lifecycle:
+
+```ts
+import { lazyTools } from "@better-agent/core";
+import { createMCPClient, convertMCPTools } from "@better-agent/core/mcp";
+
+export const mcpTools = lazyTools(async () => {
+  const client = await createMCPClient({
+    transport: {
+      type: "http",
+      url: "https://mcp.context7.com/mcp",
+    },
+  });
+  const listed = await client.listTools();
+  return {
+    tools: convertMCPTools(client, listed.tools, { prefix: "mcp" }),
+    dispose: async () => { await client.close(); },
+  };
+});
+```
+
+Pass `mcpTools` directly to an agent's `tools` field.
+
+## Transport Configuration
+
+The client supports two transport types:
+
+**HTTP:**
+```ts
+transport: {
+  type: "http",
+  url: "https://mcp.example.com/mcp",
+  headers: { "X-API-Key": "sk-abc123" },
+}
+```
+
+**SSE:**
+```ts
+transport: {
+  type: "sse",
+  url: "https://mcp.example.com/sse",
+  headers: { "X-API-Key": "sk-abc123" },
+}
+```
+
+Both transports accept `url`, `headers`, and `redirect`. HTTP also accepts `sessionId` for resumable connections.
+
+> **Note:** `CONTEXT7_MCP_URL` can be used to configure the Context7 MCP endpoint via environment variable when using the lazy-tools integration.

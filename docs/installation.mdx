@@ -1,0 +1,67 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 10
+---
+
+# Installation
+
+Better Agent installs into any TypeScript project. The fastest path is the `create` CLI, which detects your framework, generates the required files, and writes the environment variables you need.
+
+## Automatic Setup
+
+Run the create command with your preferred package manager:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI detects your framework, lets you choose providers and plugins, generates the Better Agent files, and adds the required env vars and package entries. It supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+To patch Better Agent into an existing app instead of scaffolding from scratch:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual Setup
+
+Use manual setup when you want full control over the project structure.
+
+**1. Create a TypeScript project** if you don't have one already:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages you need:**
+
+- `@better-agent/core` — agents, tools, events, and the runtime server
+- `@better-agent/client` — typed HTTP client with React, Vue, Svelte, Solid, and Preact hooks
+- `@better-agent/providers` — adapters for OpenAI, Anthropic, and xAI
+- `@better-agent/plugins` — auth, rate limiting, logging, IP allowlist, and sandbox
+- `@better-agent/cli` — type generation for cross-package client setups
+
+**3. Set your environment variables.** At minimum you need an API key for your chosen model provider and a secret for the Better Agent HTTP layer:
+
+```env
+OPENAI_API_KEY=sk-...
+BETTER_AGENT_SECRET=your-secret
+```
+
+Once your server file exports a `betterAgent()` instance and it starts without errors, the setup is complete. Head to [Usage](/docs/get-started/usage) to build your first agent app.

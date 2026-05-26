@@ -1,0 +1,76 @@
+---
+title: "Events"
+description: "Observe what happens during an agent run in real time."
+order: 11
+---
+
+# Events
+
+Events stream what happens during a run as it happens. Every event has a `type` and a `timestamp`. Most apps only handle a small subset — typically `TEXT_MESSAGE_CONTENT` for streaming text and `RUN_FINISHED` for the final result.
+
+## Streaming Events
+
+Use `stream.events` to iterate over events as they arrive:
+
+```ts
+const stream = await app.stream("assistant", {
+  input: "What's the weather in Tokyo?",
+});
+
+for await (const event of stream.events) {
+  switch (event.type) {
+    case "TEXT_MESSAGE_CONTENT":
+      process.stdout.write(event.delta);
+      break;
+    case "TOOL_CALL_RESULT":
+      console.log("Tool result:", event.result);
+      break;
+    case "RUN_FINISHED":
+      console.log("Done");
+      break;
+  }
+}
+```
+
+The `stream` object also exposes `runId` and a `result` promise for the final run result.
+
+## onEvent Callback
+
+Use `onEvent` on run options when you don't need the full stream handle:
+
+```ts
+await app.run("assistant", {
+  input: "Summarize this document...",
+  onEvent: (event) => {
+    if (event.type === "STEP_FINISH") {
+      console.log(`Step ${event.stepIndex + 1} done`);
+    }
+  },
+});
+```
+
+## Run Lifecycle Events
+
+These events mark the boundaries of a run:
+
+| Event | Description |
+| --- | --- |
+| `RUN_STARTED` | Run began. Carries `runId`, `agentName`, `conversationId`, and `runInput`. |
+| `RUN_FINISHED` | Run completed successfully. |
+| the required value | Run failed. Carries the error. |
+| `STEP_START` | A new model step began. |
+| `STEP_FINISH` | A step completed. Carries `terminationReason`. |
+
+## Message Events
+
+| Event | Description |
+| --- | --- |
+| `TEXT_MESSAGE_START` | A new assistant message started streaming. |
+| `TEXT_MESSAGE_CONTENT` | A text delta arrived. Carries `delta`. |
+| `TEXT_MESSAGE_END` | The current assistant message finished. |
+| `TOOL_CALL_START` | The model started a tool call. |
+| `TOOL_CALL_RESULT` | A tool call completed. Carries `result`. |
+
+## Tool Approval Events
+
+When a tool has `approval` configured, Better Agent emits the required value and then `TOOL_APPROVAL_UPDATED` with the decision. See [Human in the Loop](/docs/concepts/hil) for the approval lifecycle.

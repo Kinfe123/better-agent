@@ -1,0 +1,15 @@
+---
+title: "Introduction"
+description: "A TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 0
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven agent apps that fit into your existing stack. It gives you end-to-end type safety from agent definitions to client calls, runs on any framework that speaks the Fetch standard, and ships with first-class persistence support for durable conversations and resumable streams.
+
+The core idea is simple: define an agent once with a model, instructions, tools, and context schema, then mount it as an HTTP handler in Next.js, SvelteKit, TanStack Start, Remix, Astro, Hono, or any other server you already use. A typed client lets your UI call those agents with full inference — agent names, context shapes, structured output, and tool contracts all flow from your server definition to your browser code without a code-generation step in the same project.
+
+Plugins let you attach cross-agent behavior — auth, rate limiting, logging, lifecycle hooks — once at the app level. Persistence is opt-in and store-contract-based, so you implement it on top of your own database.
+
+If you're new, start with [Installation](/docs/get-started/installation) to get the packages set up, then [Usage](/docs/get-started/usage) for a working first app. The [Concepts](/docs/concepts) section covers the mental models you'll need as your app grows.

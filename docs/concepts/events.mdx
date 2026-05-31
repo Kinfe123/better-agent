@@ -1,0 +1,77 @@
+---
+title: "Events"
+description: "Observe what happens during an agent run in real time."
+order: 11
+---
+
+# Events
+
+Events stream what happens during a run as it happens. Every event has a `type` and a `timestamp`. Most apps only handle a small subset.
+
+## Consuming Events
+
+### Streaming
+
+Use `stream.events` to iterate over events as they arrive:
+
+```ts
+const stream = await app.stream("assistant", {
+  input: "What's the weather in Tokyo?",
+});
+
+for await (const event of stream.events) {
+  switch (event.type) {
+    case "TEXT_MESSAGE_CONTENT":
+      process.stdout.write(event.delta);
+      break;
+    case "TOOL_CALL_RESULT":
+      console.log("Tool result:", event.result);
+      break;
+    case "RUN_FINISHED":
+      console.log("Done");
+      break;
+  }
+}
+```
+
+The `stream` object also exposes `runId` and a `result` promise for the final run result.
+
+### onEvent Callback
+
+Use `onEvent` on run options when you don't need the full stream handle:
+
+```ts
+await app.run("assistant", {
+  input: "Summarize this document...",
+  onEvent: (event) => {
+    if (event.type === "STEP_FINISH") {
+      console.log(
+        `Step ${event.stepIndex + 1} done (${event.terminationReason ?? "continuing"})`
+      );
+    }
+  },
+});
+```
+
+## Run Lifecycle Events
+
+These events mark the boundaries of a run:
+
+| Event | Key Fields | Description |
+| --- | --- | --- |
+| `RUN_STARTED` | `runId`, `agentName`, `conversationId?`, `runInput` | Run began. |
+| `RUN_FINISHED` | `runId`, `finishReason`, `response` | Run completed successfully. |
+| the required value | `runId`, `error` | Run failed with an error. |
+| `STEP_FINISH` | `stepIndex`, `terminationReason?` | A step completed. |
+
+## Message and Tool Events
+
+These events carry content as it streams:
+
+| Event | Description |
+| --- | --- |
+| `TEXT_MESSAGE_CONTENT` | A delta of text from the model response. |
+| `TOOL_CALL_START` | The model started calling a tool. |
+| `TOOL_CALL_RESULT` | A tool returned a result. |
+| the required value | Waiting for human approval before a tool runs. |
+| `TOOL_APPROVAL_UPDATED` | Approval was granted, denied, or expired. |

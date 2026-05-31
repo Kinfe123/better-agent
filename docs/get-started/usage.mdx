@@ -1,0 +1,96 @@
+---
+title: "Usage"
+description: "Create your first agent app."
+order: 3
+---
+
+# Usage
+
+Build a small Better Agent app in `server.ts`, `client.ts`, and a UI component. By the end you'll have a working chat loop wired from model to browser.
+
+## Define the server
+
+Create a Better Agent app with one agent:
+
+```ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-4o-mini"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: "dev-secret",
+});
+
+export default app;
+```
+
+## Create a typed client
+
+Import the server app type to get full inference for agent names, inputs, outputs, and tool contracts:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type app from "./server";
+
+export const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: "dev-secret",
+});
+```
+
+When your client and server live in separate packages, use the generated type from the CLI instead. See [TypeScript](/docs/concepts/typescript) for the cross-package workflow.
+
+## Connect the UI
+
+Pick the adapter for your UI framework. Here's the React version:
+
+```tsx
+import { useState } from "react";
+import { useAgent } from "@better-agent/client/react";
+import { client } from "./client";
+
+export default function Page() {
+  const [input, setInput] = useState("");
+
+  const { messages, status, sendMessage } = useAgent(client, {
+    agent: "helloAgent",
+  });
+
+  return (
+    <div>
+      <ul>
+        {messages.map((message) => (
+          <li key={message.localId}>
+            {message.role}:{" "}
+            {message.parts
+              .map((part) => (part.type === "text" ? part.text : ""))
+              .join("")}
+          </li>
+        ))}
+      </ul>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button onClick={() => { sendMessage(input); setInput(""); }}>
+        Send
+      </button>
+      <p>Status: {status}</p>
+    </div>
+  );
+}
+```
+
+Adapters for Vue, Svelte, Solid, and Preact follow the same shape — import from the matching adapter path and call the equivalent hook.
+
+## Next Steps
+
+From here, read [Agent](/docs/concepts/agent) to understand the core building block, [Tools](/docs/concepts/tools) to let agents take structured actions, [Structured Output](/docs/concepts/structured-output) for typed JSON responses, and [Persistence](/docs/concepts/persistence) for durable conversations.

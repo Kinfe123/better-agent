@@ -1,0 +1,82 @@
+---
+title: "Structured Output"
+description: "Get typed, validated responses from your agents."
+order: 10
+---
+
+# Structured Output
+
+Structured output lets you define a schema for the model's response. Better Agent parses the response as JSON, validates it against your schema, and returns a typed `structured` field on the run result.
+
+## Define an Output Schema
+
+An output schema has a `schema` field and optional `name` and `strict` fields. The `schema` accepts any Standard Schema library or a raw JSON Schema object:
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { z } from "zod";
+import { openai } from "./openai";
+
+const summaryAgent = defineAgent({
+  name: "summary",
+  model: openai.model("gpt-4o"),
+  instruction: "Summarize the given text in one paragraph.",
+  outputSchema: {
+    schema: z.object({
+      summary: z.string(),
+      wordCount: z.number(),
+    }),
+  },
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `schema` | The schema to validate the model's response against. Required. |
+| `name` | Name forwarded to providers that support named outputs. |
+| `strict` | Enables strict JSON Schema validation where supported. |
+
+## Accessing the Result
+
+When an agent has an `outputSchema`, the run result includes a typed `structured` field:
+
+```ts
+const result = await app.run("summary", {
+  input: "Summarize this article about climate change...",
+});
+
+console.log(result.structured.summary);
+console.log(result.structured.wordCount);
+```
+
+For streaming, access `structured` through the `result` promise:
+
+```ts
+const stream = await app.stream("summary", {
+  input: "Summarize this article...",
+});
+
+for await (const event of stream.events) { /* handle events */ }
+
+const result = await stream.result;
+console.log(result.structured.summary);
+```
+
+## Per-Run Override
+
+Use the `output` field on `run()` or `stream()` to override the agent's default schema for a single run. The return type updates accordingly:
+
+```ts
+const result = await app.run("summary", {
+  input: "Classify this support ticket...",
+  output: {
+    schema: z.object({
+      category: z.enum(["billing", "technical", "general"]),
+      priority: z.enum(["low", "medium", "high"]),
+    }),
+  },
+});
+
+console.log(result.structured.category);
+console.log(result.structured.priority);
+```

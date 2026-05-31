@@ -1,0 +1,77 @@
+---
+title: "Agent"
+description: "The fundamental building block of Better Agent."
+order: 5
+---
+
+# Agent
+
+An agent is the core unit of behavior in Better Agent. It brings together a model, instructions, tools, and runtime behavior into one typed definition. At minimum, an agent needs a `name` and a `model`.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { openai } from "./openai";
+
+export const helloAgent = defineAgent({
+  name: "hello",
+  model: openai.model("gpt-4o"),
+});
+```
+
+## Instructions and Context
+
+Use `instruction` for the agent's system behavior. It can be a static string or a function driven by validated context.
+
+```ts
+import { z } from "zod";
+
+const supportAgent = defineAgent({
+  name: "support",
+  model: openai.model("gpt-4o"),
+  contextSchema: z.object({
+    userId: z.string(),
+    plan: z.enum(["free", "pro"]),
+  }),
+  instruction: (context) =>
+    `Help user ${context.userId}. They are on the ${context.plan} plan.`,
+});
+```
+
+Use `contextSchema` to define typed, validated runtime data for a run — like the current user, plan, or workspace. When you register the agent in `betterAgent`, pass the matching `context` when you run it.
+
+## Tools
+
+Tools let the agent act. Pass a single tool or an array.
+
+```ts
+import { weatherTool, stockTool } from "./tools";
+
+const assistant = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+  tools: [weatherTool, stockTool],
+});
+```
+
+When a tool fails, the default behavior sends the error back to the model so it can recover. Use `toolErrorMode: "throw"` to change this, or `onToolError` for a custom recovery hook. See [Tools](/docs/concepts/tools) for the full picture.
+
+## Steps
+
+Each step produces one model response. If that response includes tool calls, the results feed into the next step. The loop continues until the model finishes naturally, a stop condition is met, or the step limit is reached.
+
+Use `maxSteps` to cap how many steps a run can take, and `stopWhen` when the run should stop based on your own workflow rules:
+
+```ts
+const researcher = defineAgent({
+  name: "researcher",
+  model: openai.model("gpt-4o"),
+  tools: [searchWeb, readPage],
+  maxSteps: 5,
+  stopWhen: ({ stepIndex, context }) =>
+    context.plan === "free" && stepIndex >= 1,
+});
+```
+
+## Next Steps
+
+Once you have an agent defined, see [API](/docs/concepts/api) to mount it over HTTP, [Tools](/docs/concepts/tools) to add structured actions, and [Structured Output](/docs/concepts/structured-output) to get typed JSON responses.

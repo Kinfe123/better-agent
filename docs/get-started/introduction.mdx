@@ -1,0 +1,38 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It exists because agent apps deserve the same quality of developer experience as the rest of your stack: end-to-end types, a server that mounts anywhere, reusable plugin behavior, and persistence that works with your own database.
+
+## Why It Exists
+
+Most agent frameworks ask you to adopt a fixed runtime, rewrite your server setup, or accept untyped client calls. Better Agent is built around four convictions:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack, including your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## Features
+
+**Typed Agents.** Define an agent once and keep its model, tools, context, and output schema typed together. The TypeScript compiler enforces that your client stays in sync.
+
+**Type-Safe Client.** Infer agent names, inputs, outputs, and hooks directly from your server app — no manual type maintenance.
+
+**Multi-Provider.** Use the same app shape across OpenAI, Anthropic, and xAI without rewriting your runtime for each one.
+
+**Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints without rebuilding the core loop. See [Plugins](/docs/concepts/plugins).
+
+**Framework Agnostic.** Mount Better Agent in the server stack you already use. The HTTP handler is a standard `Request → Response` function.
+
+**Event Driven.** Listen to structured events for messages, tool calls, approvals, and streaming state as runs progress. See [Events](/docs/concepts/events).
+
+**Durable Runs.** Add minimal persistence stores when you need resumable streams and conversation history. See [Persistence](/docs/concepts/persistence).
+
+## Where to Go Next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages, then [Usage](/docs/get-started/usage) to add a typed client and UI. Once the app is running, [Concepts](/docs/concepts) covers the building blocks in depth.

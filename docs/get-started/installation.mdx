@@ -1,0 +1,87 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your project."
+order: 2
+---
+
+# Installation
+
+Install Better Agent in your TypeScript project using the `create` CLI or manually.
+
+## Automatic
+
+The fastest path is `create better-agent`. It detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required environment variables and package entries.
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+To patch Better Agent into an existing project without scaffolding a new one:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+The CLI supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+## Manual
+
+Use the manual setup when you want full control over the project structure or prefer to integrate Better Agent by hand.
+
+**1. Create a TypeScript project** if you don't have one:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages you need:**
+
+- `@better-agent/core` — agents, tools, events, and runtime primitives.
+- `@better-agent/client` — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact.
+- `@better-agent/providers` — adapters for OpenAI, Anthropic, and xAI.
+- `@better-agent/plugins` — guards, lifecycle hooks, middleware, and runtime extensions.
+- `@better-agent/cli` — type generation for typed client packages and app definitions.
+
+**3. Set your environment variables.** At minimum you need an API key for the model provider you plan to use.
+
+## Environment Variables
+
+The following environment variables are read by Better Agent packages. Set the ones that apply to your chosen provider and deployment.
+
+**Required (pick your provider):**
+
+- `OPENAI_API_KEY` — API key for the OpenAI provider.
+- `ANTHROPIC_API_KEY` — API key for the Anthropic provider.
+- `XAI_API_KEY` — API key for the xAI provider.
+
+**Better Agent runtime:**
+
+- `BETTER_AGENT_API_KEY` — API key for authenticating requests to your Better Agent server.
+- `BETTER_AGENT_SECRET` — Bearer secret used by the built-in HTTP routes.
+
+**Optional integrations:**
+
+- `OPENAI_BASE_URL` — Override the base URL for the OpenAI provider, useful for proxies.
+- `E2B_API_KEY` — API key for the E2B sandbox client.
+- `DAYTONA_API_KEY` — API key for the Daytona sandbox client.
+- `DAYTONA_TARGET` — Target environment for Daytona sandbox runs.
+- `CONTEXT7_MCP_URL` — URL for the Context7 MCP server used with lazy MCP tools.
+
+## Next Steps
+
+Once installed, go to [Usage](/docs/get-started/usage) to build your first agent app.

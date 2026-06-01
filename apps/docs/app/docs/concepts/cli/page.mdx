@@ -1,0 +1,59 @@
+---
+title: "CLI"
+description: "Generate portable client types from your Better Agent app."
+order: 7
+---
+
+# CLI
+
+The Better Agent CLI generates a `.d.ts` file from your app's agent definitions. This gives your client full type safety — typed agent names, context schemas, and tool contracts — without importing server code. Use it when your client and server live in separate packages.
+
+## Generate Client Types
+
+```bash
+npx @better-agent/cli generate type --config ./server.ts
+```
+
+Or with the global command:
+
+```bash
+better-agent generate type --config ./server.ts
+```
+
+This discovers exported `betterAgent()` instances in the config file, extracts agent and tool type information, and writes a portable type declaration file.
+
+## Options
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `--config <path...>` | — | One or more config file paths. Required. |
+| `--cwd <path>` | `process.cwd()` | Base directory for resolving relative paths. |
+| `--out <path>` | `better-agent.types.d.ts` | Output path for the generated `.d.ts` file. |
+| `--name <identifier>` | `BAClientApp` | Exported type alias name. |
+| `--yes` | `false` | Skip prompts and overwrite the output file. |
+
+## Example
+
+```bash
+npx @better-agent/cli generate type \
+  --config ./server.ts \
+  --out ./src/types/better-agent.d.ts \
+  --name MyApp \
+  --yes
+```
+
+Once generated, import the type alias in your client:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { MyApp } from "./src/types/better-agent";
+
+const client = createClient<MyApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+> **Note:** Re-run the CLI whenever you add or change agents, tools, or context schemas on the server. The generated file is safe to commit and does not contain runtime code.
+
+For projects where the client and server share the same TypeScript project, you can skip the CLI and import the app type directly. See [TypeScript](/docs/concepts/typescript) for both patterns.

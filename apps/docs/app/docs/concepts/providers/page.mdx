@@ -1,0 +1,66 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 11
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. Each provider gives you typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level — tools, structured output, and modalities only appear when the model supports them.
+
+## Use a Provider
+
+The pattern is the same across providers: create an instance, get a model, and pass it to an agent.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey`, and optional `baseURL` and `headers` for custom endpoints or proxies.
+
+## Model Helpers
+
+`model()` auto-detects the model type from the ID and routes to the correct provider endpoint:
+
+```ts
+const textModel = openai.model("gpt-4o");
+const imageModel = openai.model("gpt-image-1");
+```
+
+Providers also expose modality-specific helpers for explicit selection:
+
+```ts
+const text = openai.text("gpt-4o");
+const image = openai.image("gpt-image-1");
+const audio = openai.audio("tts-1");
+const embedding = openai.embedding("text-embedding-3-small");
+```
+
+Not all providers support all helpers. `model()` is always available. Modality helpers are convenience shortcuts when you want the type system to enforce a specific capability.
+
+## Supported Providers
+
+Better Agent ships adapters for three providers:
+
+- **OpenAI** — text, image, audio, transcription, video, and embedding models.
+- **Anthropic** — text and multimodal response models, including hosted tools.
+- **xAI** — text, image models, and hosted tools.
+
+Every provider accepts a custom `baseURL` for proxies or compatible APIs.
+
+```ts
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL, // optional proxy
+});
+```

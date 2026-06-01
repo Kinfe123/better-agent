@@ -1,0 +1,91 @@
+---
+title: "Agent"
+description: "The fundamental building block of Better Agent."
+order: 5
+---
+
+# Agent
+
+An agent is the core unit of behavior in Better Agent. It brings together a model, instructions, tools, and runtime behavior into one typed definition. At minimum, an agent needs a `name` and a `model`.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { openai } from "./openai";
+
+export const helloAgent = defineAgent({
+  name: "hello",
+  model: openai.model("gpt-4o"),
+});
+```
+
+## Instructions and Context
+
+Use `instruction` for the agent's system behavior. It can be a static string or a function driven by validated context.
+
+```ts
+const writer = defineAgent({
+  name: "writer",
+  model: openai.model("gpt-4o"),
+  instruction: "You are a concise technical writer.",
+});
+```
+
+Use `contextSchema` to define typed, validated runtime data for a run — like the current user, plan, or workspace. Any Standard Schema library (Zod, Valibot, ArkType) works here.
+
+```ts
+import { z } from "zod";
+
+const supportAgent = defineAgent({
+  name: "support",
+  model: openai.model("gpt-4o"),
+  contextSchema: z.object({
+    userId: z.string(),
+    plan: z.enum(["free", "pro"]),
+  }),
+  instruction: (context) =>
+    `Help user ${context.userId}. They are on the ${context.plan} plan.`,
+});
+```
+
+## Tools
+
+Pass a single tool or an array to `tools`. When a tool fails, the default behavior sends the error back to the model so it can recover. Set `toolErrorMode: "throw"` when you want failures to stop the run instead.
+
+```ts
+import { weatherTool, stockTool } from "./tools";
+
+const assistant = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+  tools: [weatherTool, stockTool],
+});
+```
+
+See [Tools](/docs/concepts/tools) for defining tool contracts, server handlers, client tools, and approval policies.
+
+## Steps
+
+Each step produces one model response. Tool call results feed into the next step, and the loop continues until the model finishes naturally, a stop condition is met, or the step limit is reached.
+
+```ts
+const researcher = defineAgent({
+  name: "researcher",
+  model: openai.model("gpt-4o"),
+  tools: [searchWeb, readPage],
+  maxSteps: 5,
+});
+```
+
+Use `stopWhen` for custom stop logic based on your own workflow rules:
+
+```ts
+const researchAgent = defineAgent({
+  name: "research",
+  model: openai.model("gpt-4o"),
+  contextSchema: z.object({ plan: z.enum(["free", "pro"]) }),
+  tools: [searchWeb, readPage],
+  maxSteps: 6,
+  stopWhen: ({ stepIndex, context }) =>
+    context.plan === "free" && stepIndex >= 1,
+});
+```

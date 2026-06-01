@@ -1,0 +1,67 @@
+---
+title: "Persistence"
+description: "Store and replay conversation history across runs."
+order: 12
+---
+
+# Persistence
+
+Persistence stores conversation state across runs. Use it for durable conversations, stream resumption, and active-run tracking. You can adopt the stores you need individually, or skip persistence entirely for stateless flows.
+
+## In-Memory Stores
+
+Better Agent ships in-memory implementations for all three store types. These are useful for local development and testing:
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import {
+  createMemoryConversationStore,
+  createMemoryStreamStore,
+  createMemoryConversationRuntimeStateStore,
+} from "@better-agent/core";
+
+const app = betterAgent({
+  agents: [assistantAgent],
+  persistence: {
+    conversations: createMemoryConversationStore(),
+    stream: createMemoryStreamStore(),
+    runtimeState: createMemoryConversationRuntimeStateStore(),
+  },
+});
+```
+
+Better Agent provides three store contracts:
+
+- **Conversation Store** — loads and saves the conversation timeline (`ConversationItem[]`).
+- **Stream Store** — persists emitted events for stream resumption by disconnected clients.
+- **Runtime State Store** — tracks which run is active for a conversation.
+
+## Build Your Stores
+
+Each contract is small and maps cleanly to a table or collection in your existing database. Start with the store you need.
+
+### Conversation Store
+
+```ts
+interface ConversationStore {
+  load(params: {
+    conversationId: string;
+    agentName: string;
+  }): Promise<{ items: ConversationItem[]; cursor?: string | number } | null>;
+
+  save(params: {
+    conversationId: string;
+    agentName: string;
+    items: ConversationItem[];
+    expectedCursor?: string | number;
+  }): Promise<{ cursor: string | number }>;
+}
+```
+
+When a run starts with a `conversationId`, `load()` fetches stored history, history is replayed into the model, the agent loop appends new messages, and `save()` is called with the full updated array on success.
+
+### Stream Store
+
+The stream store persists events so disconnected clients can resume where they left off. `open()` is called when a stream starts, `append()` is called for every event, `close()` is called when the run finishes, and `resume()` yields events after a given sequence number.
+
+> **Note:** The `expectedCursor` on `save()` is the cursor returned by the preceding `load()`. Use it for optimistic concurrency checks in your database layer.

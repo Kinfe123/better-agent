@@ -1,0 +1,54 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 15
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. A provider gives you typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level — tools, structured output, and modalities only appear when the model supports them.
+
+## Use a Provider
+
+The pattern is the same across providers: create an instance, get a model, and pass it to an agent.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey` and optional `baseURL` and `headers` for custom endpoints or proxies.
+
+## Model Helpers
+
+`model()` auto-detects the model type from the ID and routes to the correct provider endpoint. It's the most common way to get a model.
+
+Providers also expose modality-specific helpers when you want the type system to enforce a specific endpoint:
+
+```ts
+const text = openai.text("gpt-4o");
+const image = openai.image("gpt-image-1");
+const audio = openai.audio("tts-1");
+const embedding = openai.embedding("text-embedding-3-small");
+```
+
+Not all providers support all helpers. `model()` is always available.
+
+## Supported Providers
+
+**OpenAI** — use `createOpenAI` from `@better-agent/providers/openai`. Supports text, image, audio, video, transcription, and embedding models. Configure via `OPENAI_API_KEY` and optionally `OPENAI_BASE_URL`.
+
+**Anthropic** — use `createAnthropic` from `@better-agent/providers/anthropic`. Supports text and multimodal response models. Configure via `ANTHROPIC_API_KEY`.
+
+**xAI** — use `createXAI` from `@better-agent/providers/xai`. Supports text, image, and model helpers. Configure via `XAI_API_KEY`.
+
+All providers accept the same base configuration shape, so switching providers is a one-line change on the instance.

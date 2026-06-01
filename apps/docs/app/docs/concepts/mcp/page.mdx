@@ -1,0 +1,81 @@
+---
+title: "MCP"
+description: "Use MCP to connect agents to external tools and data."
+order: 12
+---
+
+# MCP
+
+The Model Context Protocol (MCP) is an open standard for connecting agents to external tools, resources, and prompts. Better Agent includes an MCP client that speaks HTTP and SSE transports. You can convert remote MCP tools into Better Agent server tools and add them to an agent, or use the raw client for direct access to tools, resources, and prompts.
+
+## Add MCP Tools to an Agent
+
+Use `createMCPClient()` to connect, `listTools()` to discover tools, and `convertMCPTools()` to turn them into Better Agent server tools.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createMCPClient, convertMCPTools } from "@better-agent/core/mcp";
+import { openai } from "./openai";
+
+const docsAgent = defineAgent({
+  name: "docs",
+  model: openai.model("gpt-4o"),
+  tools: async () => {
+    const client = await createMCPClient({
+      transport: { type: "http", url: "https://mcp.context7.com/mcp" },
+    });
+
+    const listed = await client.listTools();
+
+    return convertMCPTools(client, listed.tools, { prefix: "docs" });
+  },
+});
+```
+
+`convertMCPTools` takes the MCP client, the tool list, and an optional `prefix`. Each MCP tool becomes a server tool that proxies execution back to the MCP server.
+
+> **Note:** Set `CONTEXT7_MCP_URL` in your environment to configure the Context7 MCP server URL when using that service.
+
+## Cache Clients Across Runs
+
+The example above creates a new client on every run. Use `lazyTools()` to cache a client across runs and control its lifecycle manually.
+
+```ts
+import { lazyTools } from "@better-agent/core";
+import { createMCPClient, convertMCPTools } from "@better-agent/core/mcp";
+
+export const mcpTools = lazyTools(async () => {
+  const client = await createMCPClient({
+    transport: {
+      type: "http",
+      url: "https://mcp.context7.com/mcp",
+    },
+  });
+
+  const listed = await client.listTools();
+
+  return {
+    tools: convertMCPTools(client, listed.tools, { prefix: "mcp" }),
+    dispose: async () => { await client.close(); },
+  };
+});
+```
+
+## Transport Configuration
+
+The client supports `http` and `sse` transports. Both accept the same base fields:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `url` | `string` | MCP server URL. Required. |
+| `headers` | `Record<string, string>` | Additional HTTP headers sent with every request. |
+| `redirect` | `"follow"` \| `"error"` | How to handle HTTP redirects. |
+| `sessionId` | `string` | Session id for resumable connections (HTTP only). |
+
+```ts
+transport: {
+  type: "sse",
+  url: "https://mcp.example.com/sse",
+  headers: { "X-API-Key": "sk-abc123" },
+}
+```

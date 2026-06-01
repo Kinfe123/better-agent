@@ -1,0 +1,69 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 10
+---
+
+# Installation
+
+Better Agent installs into any TypeScript project. You can scaffold a new app automatically or wire it in by hand.
+
+## Automatic setup
+
+The fastest path is the `create` CLI. Run it with your preferred package manager:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required env vars and package entries. It supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+To patch Better Agent into an existing project instead of scaffolding fresh:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual setup
+
+Use manual setup when you want full control over the project structure.
+
+**1. Create a TypeScript project** if you don't have one:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages you need:**
+
+```bash
+npm install @better-agent/core @better-agent/client @better-agent/providers
+```
+
+**3. Add your provider API key** to `.env`:
+
+```bash
+OPENAI_API_KEY=sk-...
+BETTER_AGENT_SECRET=your-secret
+```
+
+**4. Verify the setup** by importing from `@better-agent/core` in a `server.ts` file — TypeScript should resolve the module with no errors.
+
+## Next steps
+
+Head to [Usage](/docs/quickstart) to build your first agent, or read [Concepts](/docs/concepts) to understand how agents, tools, and providers fit together.

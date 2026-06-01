@@ -1,0 +1,38 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It exists because agent apps should be typed end-to-end, fit into existing stacks, and support durable, resumable conversations without requiring a proprietary runtime.
+
+## Why It Exists
+
+Most agent frameworks either lock you into a specific runtime or sacrifice type safety at the boundary between server and client. Better Agent takes a different approach:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack — your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## Features
+
+**Typed Agents.** Define an agent once and keep its model, tools, context, and output schema typed together. The type system enforces those contracts on every call.
+
+**Type-Safe Client.** Agent names, context shapes, structured output types, and client tool handlers are all inferred from your server app definition. Typos in agent names become compile errors.
+
+**Multi-Provider.** Use the same app shape across OpenAI, Anthropic, and xAI without rewriting your runtime for each one.
+
+**Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints once at the app level — they apply to every agent.
+
+**Framework Agnostic.** Mount Better Agent in the server stack you already use. The HTTP handler is a standard `Request → Response` function.
+
+**Event Driven.** Listen to structured events for messages, tool calls, approvals, and streaming state as runs progress.
+
+**Durable Runs.** Add minimal persistence stores when you need resumable streams or multi-turn conversation history.
+
+## Where to Go Next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages, or jump straight to [Usage](/docs/get-started/usage) to see the three-file app pattern. When you're ready to understand the building blocks, [Concepts](/docs/concepts) covers agents, tools, providers, events, and more.

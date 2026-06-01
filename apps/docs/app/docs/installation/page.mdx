@@ -1,0 +1,71 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 10
+---
+
+# Installation
+
+Install Better Agent in your TypeScript project. The fastest path is the `create` CLI, which detects your framework, scaffolds the necessary files, and writes your environment variables. If you need full control over the project structure, use the manual steps instead.
+
+## Automatic
+
+Run one command to scaffold a new Better Agent project or patch Better Agent into an existing one:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required environment variables and package entries. It supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+To patch Better Agent into an existing app rather than scaffold from scratch, pass `--mode patch`:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual
+
+Use the manual setup if you want full control over the project structure.
+
+**1. Create a TypeScript project** if you don't have one:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages you need:**
+
+- `@better-agent/core` — agents, tools, events, and runtime primitives.
+- `@better-agent/client` — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact.
+- `@better-agent/providers` — adapters for OpenAI, Anthropic, and xAI.
+- `@better-agent/plugins` — guards, lifecycle hooks, middleware, and runtime extensions.
+- `@better-agent/cli` — type generation for client packages and app definitions.
+
+```bash
+npm install @better-agent/core @better-agent/client @better-agent/providers
+```
+
+**3. Set your environment variables.** At minimum you need a provider API key and a Better Agent secret for the HTTP handler:
+
+```bash
+OPENAI_API_KEY=sk-...
+BETTER_AGENT_SECRET=your-secret
+```
+
+After installation, continue to [Usage](/docs/get-started/usage) to build your first agent app.

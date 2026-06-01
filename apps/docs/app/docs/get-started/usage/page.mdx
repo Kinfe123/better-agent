@@ -1,0 +1,94 @@
+---
+title: "Usage"
+description: "Create your first agent app."
+order: 3
+---
+
+# Usage
+
+Build a small Better Agent app across three files: `server.ts`, `client.ts`, and a UI component. This is the minimal shape every Better Agent app follows.
+
+## Define the server
+
+Create a Better Agent app with one agent:
+
+```ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-4o-mini"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET,
+});
+
+export default app;
+```
+
+## Create a typed client
+
+Import the server app type to get full inference over agent names, inputs, and outputs:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type app from "./server";
+
+export const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your client and server live in separate packages, use the [CLI](/docs/concepts/cli) to generate a portable `.d.ts` type file instead.
+
+## Connect the UI
+
+Use the React adapter to wire up a chat loop:
+
+```tsx
+import { useState } from "react";
+import { useAgent } from "@better-agent/client/react";
+import { client } from "./client";
+
+export default function Page() {
+  const [input, setInput] = useState("");
+
+  const { messages, status, sendMessage } = useAgent(client, {
+    agent: "helloAgent",
+  });
+
+  return (
+    <div>
+      <ul>
+        {messages.map((msg) => (
+          <li key={msg.localId}>
+            <strong>{msg.role}:</strong>{" "}
+            {msg.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
+          </li>
+        ))}
+      </ul>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button
+        onClick={() => { sendMessage(input); setInput(""); }}
+        disabled={status === "running"}
+      >
+        Send
+      </button>
+    </div>
+  );
+}
+```
+
+Adapters for Vue, Svelte, Solid, and Preact follow the same `useAgent` pattern.
+
+From here, explore [Tools](/docs/concepts/tools) to let agents act on your data, [Structured Output](/docs/concepts/structured-output) for typed model responses, or [Persistence](/docs/concepts/persistence) for durable multi-turn conversations.

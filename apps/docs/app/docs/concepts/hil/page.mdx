@@ -1,0 +1,74 @@
+---
+title: "Human in the Loop"
+description: "Require human approval before a tool runs."
+order: 16
+---
+
+# Human in the Loop
+
+Human in the Loop pauses execution and waits for an approval decision before a tool runs. Use it when a tool is sensitive, costly, or irreversible — for example, deleting data, issuing refunds, running infrastructure changes, or triggering client-side actions that need explicit user confirmation.
+
+## Static Approval
+
+Use `approval` on the tool contract when the tool should always require approval:
+
+```ts
+import { defineTool } from "@better-agent/core";
+import { z } from "zod";
+
+const deleteDatabase = defineTool({
+  name: "delete_database",
+  schema: z.object({ databaseId: z.string() }),
+  approval: {
+    required: true,
+    timeoutMs: 300_000,
+    meta: { risk: "high" },
+  },
+}).server(async ({ databaseId }) => {
+  await db.delete(databaseId);
+  return { deleted: true };
+});
+```
+
+When the agent calls `delete_database`, Better Agent pauses and waits for a human decision before running the handler.
+
+## Dynamic Approval
+
+Use `resolve` when approval should depend on runtime input or context:
+
+```ts
+const refundPayment = defineTool({
+  name: "refund_payment",
+  schema: z.object({ orderId: z.string(), amount: z.number() }),
+  approval: {
+    resolve: ({ input, context }) => ({
+      required: input.amount > 100,
+      timeoutMs: 60_000,
+      meta: {
+        amount: input.amount,
+        risk: input.amount > 500 ? "critical" : "medium",
+      },
+    }),
+  },
+}).server(async ({ orderId, amount }) => {
+  await processRefund(orderId, amount);
+  return { refunded: amount, orderId };
+});
+```
+
+The resolver receives `context`, `input`, `runId`, `toolCallId`, `toolName`, and `toolTarget`. It can override `required`, `timeoutMs`, and `meta` for that specific call.
+
+## Timeouts
+
+Approval timeout is resolved in order: the `resolve()` return value, then `approval.timeoutMs` on the contract, then `advanced.toolApprovalTimeoutMs` as the app-wide fallback.
+
+```ts
+const app = betterAgent({
+  agents: [adminAgent],
+  advanced: {
+    toolApprovalTimeoutMs: 600_000,
+  },
+});
+```
+
+If approval times out, Better Agent emits a `TOOL_APPROVAL_UPDATED` event with `state: "expired"` and the run fails with a `TIMEOUT` error.

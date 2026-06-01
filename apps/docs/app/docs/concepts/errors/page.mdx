@@ -1,0 +1,63 @@
+---
+title: "Errors"
+description: "Understand Better Agent error codes, shapes, and recovery."
+order: 17
+---
+
+# Errors
+
+Better Agent uses `BetterAgentError` as the standard error type across the framework. It carries a stable `code` for programmatic handling, so your error-handling logic doesn't break when messages change.
+
+## Error Shape
+
+On the server, `BetterAgentError` extends `Error` with structured fields.
+
+```ts
+import { BetterAgentError } from "@better-agent/shared/errors";
+
+try {
+  const result = await app.run("assistant", { input: "Hello" });
+} catch (error) {
+  if (error instanceof BetterAgentError) {
+    console.log(error.code);      // e.g. "VALIDATION_FAILED"
+    console.log(error.message);
+    console.log(error.status);    // HTTP status code
+    console.log(error.retryable); // boolean
+    console.log(error.context);   // additional context object
+  }
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `code` | `string` | Stable error code, such as `"VALIDATION_FAILED"`. |
+| `message` | `string` | Human-readable error message. |
+| `status` | `number` | HTTP status code. |
+| `title` | `string` | Short title, such as `"Unprocessable Entity"`. |
+| `type` | `string` | Docs URL for the error code. |
+| `retryable` | `boolean` | Whether retrying may help. |
+| `context` | `Record<string, unknown>` | Additional structured context for the error. |
+
+## Client Errors
+
+On the client, errors are normalized into `AgentClientError`. It carries the same fields plus a `raw` field holding the original thrown value.
+
+```ts
+import { toAgentClientError } from "@better-agent/client";
+
+try {
+  await client.run("assistant", { input: "Hello" });
+} catch (error) {
+  const clientError = toAgentClientError(error);
+  console.log(clientError.code);
+  console.log(clientError.message);
+  console.log(clientError.retryable);
+  console.log(clientError.raw);
+}
+```
+
+The client parses error responses from the server automatically. JSON bodies with `code`, `detail`, `status`, `retryable`, `context`, `issues`, and `trace` fields are all preserved.
+
+## Recovery
+
+Check `retryable` before deciding whether to retry a failed run. Errors like network timeouts and transient provider failures are typically retryable. Validation errors and missing agent names are not.

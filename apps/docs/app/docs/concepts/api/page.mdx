@@ -1,0 +1,81 @@
+---
+title: "API"
+description: "Expose your Better Agent app over HTTP."
+order: 6
+---
+
+# API
+
+Use `betterAgent()` to create an app with a programmatic API (`run`, `stream`) and an HTTP handler. The handler is a standard `Request → Response` function, so you can mount it in any framework that gives you a `Request` object.
+
+## Create Your App
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import { assistantAgent } from "./agents";
+
+export const app = betterAgent({
+  agents: [assistantAgent],
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `agents` | Agents registered in the app. Required, at least one. |
+| `baseURL` | Base path for the built-in HTTP routes. The pathname is used as the route prefix. |
+| `secret` | Bearer token for built-in HTTP routes. When set, requests must include `Authorization: Bearer <secret>`. |
+| `plugins` | Cross-agent plugins for auth, logging, rate limiting, and more. See [Plugins](/docs/concepts/plugins). |
+| `persistence` | Conversation, stream, and runtime state stores. See [Persistence](/docs/concepts/persistence). |
+| `tools` | Shared tools available to all agents in the app. |
+
+## Programmatic API
+
+Use `app.run()` and `app.stream()` to call agents directly from your server code, with no HTTP layer involved.
+
+### run
+
+`run` executes an agent and waits for the final result.
+
+```ts
+const result = await app.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+### stream
+
+`stream` returns a `runId`, an async iterable of `events`, and a `result` promise.
+
+```ts
+const stream = app.stream("assistant", {
+  input: "Summarize this document...",
+});
+
+for await (const event of stream.events) {
+  if (event.type === "TEXT_MESSAGE_CONTENT") {
+    process.stdout.write(event.delta);
+  }
+}
+
+const result = await stream.result;
+```
+
+## HTTP Handler
+
+The `app.handler` property is a standard `(request: Request) => Promise<Response>` function. Mount it under the same path as `baseURL`.
+
+```ts
+// Next.js App Router example
+export const GET = app.handler;
+export const POST = app.handler;
+```
+
+Keep `baseURL` and the mounted route path aligned. If the app uses `baseURL: "/api"`, mount the handler under `/api`.
+
+> **Note:** The `secret` field gates every built-in HTTP route. Without it set, any caller can reach your agents over HTTP.

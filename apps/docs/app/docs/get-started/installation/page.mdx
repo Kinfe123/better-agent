@@ -1,0 +1,92 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your project."
+order: 2
+---
+
+# Installation
+
+Install Better Agent into an existing TypeScript project — or scaffold a fresh one — using the `create-better-agent` CLI.
+
+## Automatic Setup
+
+The fastest path is `create better-agent`. It detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required env vars and package entries.
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+To patch Better Agent into an existing app without scaffolding a new project, pass `--mode patch`:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+The CLI supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+## Manual Setup
+
+If you want full control over the project structure, install the packages directly.
+
+**Core** — agents, tools, events, and runtime primitives:
+
+```bash
+npm install @better-agent/core
+```
+
+**Client** — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact:
+
+```bash
+npm install @better-agent/client
+```
+
+**Providers** — adapters for OpenAI, Anthropic, and xAI:
+
+```bash
+npm install @better-agent/providers
+```
+
+**Plugins** — guards, lifecycle hooks, middleware, and runtime extensions:
+
+```bash
+npm install @better-agent/plugins
+```
+
+**CLI** — type generation for typed client packages:
+
+```bash
+npm install -D @better-agent/cli
+```
+
+## Environment Variables
+
+After installation, add the API key for your chosen provider to your `.env` file.
+
+**Required (pick the provider you use):**
+
+- `OPENAI_API_KEY` — API key for OpenAI models.
+- `ANTHROPIC_API_KEY` — API key for Anthropic models.
+- `XAI_API_KEY` — API key for xAI models.
+
+**Required for Better Agent's HTTP layer:**
+
+- `BETTER_AGENT_SECRET` — Bearer token used to authenticate requests between your client and server.
+
+**Optional:**
+
+- `BETTER_AGENT_API_KEY` — API key when using the managed Better Agent platform.
+- `OPENAI_BASE_URL` — Override the OpenAI API base URL for custom endpoints or proxies.
+
+Once your packages and env vars are in place, head to [Usage](/docs/get-started/usage) to build your first agent app.

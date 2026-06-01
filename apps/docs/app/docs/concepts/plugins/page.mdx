@@ -1,0 +1,78 @@
+---
+title: "Plugins"
+description: "Extend Better Agent with cross-agent behavior."
+order: 14
+---
+
+# Plugins
+
+Plugins add behavior that applies across your entire app: logging, auth, rate limiting, lifecycle hooks, and custom endpoints. Register them once at the app level and they apply to every agent.
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import { rateLimitPlugin, loggingPlugin } from "@better-agent/plugins";
+
+export const app = betterAgent({
+  agents: [myAgent],
+  plugins: [
+    rateLimitPlugin({ windowMs: 60_000, max: 20 }),
+    loggingPlugin({ level: "info" }),
+  ],
+});
+```
+
+## Creating a Plugin
+
+Use `definePlugin()` to create a custom plugin. Every plugin needs a unique `id`.
+
+```ts
+import { definePlugin } from "@better-agent/core";
+
+export const myPlugin = definePlugin({
+  id: "my-plugin",
+  // guards, lifecycle hooks, event middleware, endpoints
+});
+```
+
+## Guards
+
+Guards run before a request is processed. Return `null` to allow, or a `Response` to reject.
+
+```ts
+const workspaceAuth = definePlugin({
+  id: "workspace-auth",
+  guards: [
+    async ({ mode, agentName, request }) => {
+      const token = request.headers.get("authorization");
+      if (!token) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+      return null;
+    },
+  ],
+});
+```
+
+The guard context includes `mode` (the request type: `"run"`, `"stream"`, `"load_conversation"`, `"abort_run"`, `"resume_stream"`, or `"resume_conversation"`), `agentName`, `input`, and `request`.
+
+## Lifecycle Hooks
+
+Plugins can hook into every phase of the agent loop. All hooks run in plugin registration order, before the agent's own hooks.
+
+The `onStep` hook runs before each step. Use it to mutate messages, set tool choice, filter active tools, or override the system instruction:
+
+```ts
+const contextInjector = definePlugin({
+  id: "context-injector",
+  onStep: async (ctx) => {
+    if (ctx.stepIndex === 0) {
+      ctx.updateMessages((messages) => [
+        ...messages,
+        { role: "system", content: `Current time: ${new Date().toISOString()}` },
+      ]);
+    }
+  },
+});
+```
+
+See [Auth](/docs/plugins/auth) for a ready-made plugin you can drop in.

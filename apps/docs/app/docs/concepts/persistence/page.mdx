@@ -1,0 +1,76 @@
+---
+title: "Persistence"
+description: "Store and replay conversation history across runs."
+order: 13
+---
+
+# Persistence
+
+Persistence stores conversation state across runs. Use it for durable conversations, stream resumption, and active-run tracking. You can adopt the stores you need, or skip persistence entirely for stateless flows.
+
+Better Agent provides three store contracts:
+
+- **Conversation Store** — loads and saves the conversation timeline.
+- **Stream Store** — persists emitted events for stream resumption.
+- **Runtime State Store** — tracks which run is active for a conversation.
+
+## In-Memory Stores
+
+For local development and testing, use the built-in in-memory implementations:
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import {
+  createMemoryConversationStore,
+  createMemoryStreamStore,
+  createMemoryConversationRuntimeStateStore,
+} from "@better-agent/core";
+
+const app = betterAgent({
+  agents: [assistantAgent],
+  persistence: {
+    conversations: createMemoryConversationStore(),
+    stream: createMemoryStreamStore(),
+    runtimeState: createMemoryConversationRuntimeStateStore(),
+  },
+});
+```
+
+> **Note:** In-memory stores are reset when your server restarts. Use a database-backed implementation in production.
+
+## Conversation Store
+
+The conversation store loads and saves a `ConversationItem[]` array for each conversation. Implement it on top of your existing database:
+
+```ts
+interface ConversationStore {
+  load(params: {
+    conversationId: string;
+    agentName: string;
+  }): Promise<{ items: ConversationItem[]; cursor?: string | number } | null>;
+
+  save(params: {
+    conversationId: string;
+    agentName: string;
+    items: ConversationItem[];
+    expectedCursor?: string | number;
+  }): Promise<{ cursor: string | number }>;
+}
+```
+
+`save()` receives `expectedCursor` — the cursor returned by the `load()` that started the run — for optimistic concurrency control.
+
+## Stream Store
+
+The stream store persists events so disconnected clients can resume where they left off.
+
+```ts
+interface StreamStore {
+  open(streamId: string, meta: { runId: string }): Promise<void>;
+  append(streamId: string, event: StreamEvent): Promise<void>;
+  close(streamId: string): Promise<void>;
+  resume(streamId: string, afterSeq?: number): AsyncIterable<StreamEvent>;
+}
+```
+
+`resume()` yields historical events first, then live events if the stream is still active. This lets clients reconnect mid-run without missing any output.

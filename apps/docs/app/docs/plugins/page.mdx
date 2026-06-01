@@ -1,0 +1,27 @@
+---
+title: "Plugins"
+description: "Ready-made plugins for common production concerns."
+order: 19
+---
+
+# Plugins
+
+Better Agent ships a set of ready-made plugins for common production concerns. Register them in your `betterAgent()` call and they apply across every agent in the app.
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import { authPlugin, loggingPlugin, rateLimitPlugin } from "@better-agent/plugins";
+
+export const app = betterAgent({
+  agents: [myAgent],
+  plugins: [
+    authPlugin({ apiKeys: [process.env.API_KEY!] }),
+    loggingPlugin(),
+    rateLimitPlugin({ windowMs: 60_000, max: 100 }),
+  ],
+});
+```
+
+[Auth](/docs/plugins/auth) blocks requests without a valid API key. It supports static key lists, custom headers, and fully custom validation logic.
+
+For building your own plugins from scratch — guards, lifecycle hooks, event middleware, and custom endpoints — see [Concepts: Plugins](/docs/concepts/plugins).

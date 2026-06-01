@@ -1,0 +1,15 @@
+---
+title: "Introduction"
+description: "A TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 0
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building agent apps that are typed end-to-end, from server definitions to client calls. It fits into the stack you already have — your existing framework, database, and auth — instead of asking you to rebuild around a new runtime.
+
+The core idea is that an agent definition is also a type contract. Your model choice, tools, context schema, and output schema all flow through to the client automatically. You get autocomplete, compile-time errors, and no runtime overhead from the type layer.
+
+Agents run over HTTP through a standard `Request → Response` handler you can mount anywhere. The client speaks to that handler with full type inference. If your client lives in a separate package, the CLI generates a portable `.d.ts` file that carries all the types without importing server code.
+
+If you're new, start with [Installation](/docs/get-started/installation) to get the packages in place, then [Usage](/docs/get-started/usage) to build your first agent app. The [Concepts](/docs/concepts) section covers the mental models you'll need for deeper work — agents, tools, providers, plugins, and persistence.

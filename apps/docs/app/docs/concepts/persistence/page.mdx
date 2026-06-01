@@ -1,0 +1,48 @@
+---
+title: "Persistence"
+description: "Store and replay conversation history across runs."
+order: 11
+---
+
+# Persistence
+
+Persistence stores conversation state across runs. Use it for durable conversations, stream resumption, and active-run tracking. You can adopt only the stores you need, or skip persistence entirely for stateless flows.
+
+## Quick start with in-memory stores
+
+Better Agent ships in-memory implementations for all three store contracts — useful for local development:
+
+```ts
+import { betterAgent, createMemoryConversationStore, createMemoryStreamStore, createMemoryConversationRuntimeStateStore } from "@better-agent/core";
+
+const app = betterAgent({
+  agents: [assistantAgent],
+  persistence: {
+    conversations: createMemoryConversationStore(),
+    stream: createMemoryStreamStore(),
+    runtimeState: createMemoryConversationRuntimeStateStore(),
+  },
+});
+```
+
+> **Note:** In-memory stores are not durable. Use them for development and replace them with database-backed implementations for production.
+
+## Store contracts
+
+Better Agent provides three store contracts. Each is a small interface you implement on top of your existing database.
+
+### Conversation Store
+
+Loads and saves the conversation timeline as a `ConversationItem[]` array. When a run starts with a `conversationId`, `load()` fetches stored history, the agent loop runs and appends new items, then `save()` writes the full updated array. The `expectedCursor` on `save()` is the cursor returned by the preceding `load()`, enabling optimistic concurrency.
+
+### Stream Store
+
+Persists emitted events so disconnected clients can resume where they left off. The `open()` / `append()` / `close()` lifecycle tracks a stream's lifespan. `resume()` yields events after a given sequence number — historical first, then live if the stream is still active.
+
+### Runtime State Store
+
+Tracks which run is currently active for a conversation. Used to prevent duplicate runs and to support run abortion.
+
+## Building your stores
+
+Each contract maps cleanly to a table or collection in your existing database. You only implement `load`, `save`, `open`, `append`, `close`, and `resume` — no framework coupling required.

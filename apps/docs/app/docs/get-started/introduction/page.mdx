@@ -1,0 +1,27 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It gives you the building blocks — agents, tools, events, persistence, plugins — without forcing you to adopt a new app framework or platform.
+
+## Why it exists
+
+Most agent frameworks make you choose between type safety and flexibility. Better Agent solves that by treating your agent definitions as the source of truth for both server runtime and client types. Your client infers agent names, context shapes, structured output types, and tool handler signatures directly from your server code — no manual syncing.
+
+The framework is designed to fit into your stack, not replace it. You mount the HTTP handler in whatever server you already use, connect the client to your existing UI, and implement persistence on top of your existing database.
+
+## Core design goals
+
+Agent apps should be typed end-to-end, from definitions to client calls. The framework should fit into your existing stack, including your application, database, and auth. Reusable behavior should be easy to package and share as plugins. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## What's included
+
+Better Agent ships as a set of focused packages. The core handles agents, tools, events, and runtime primitives. The client package provides a typed HTTP client and framework hooks for React, Vue, Svelte, Solid, and Preact. Providers adapt the framework to OpenAI, Anthropic, and xAI model APIs. Plugins cover auth, logging, rate limiting, IP allowlisting, and sandbox execution environments.
+
+## Where to go next
+
+Run `npm create better-agent` to scaffold a new project, or read [Installation](/docs/get-started/installation) to set things up manually. Once you have a project, [Usage](/docs/quickstart) walks through a working server-to-client example. [Concepts](/docs/concepts) covers the mental model in depth.

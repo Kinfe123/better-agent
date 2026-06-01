@@ -1,0 +1,57 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 13
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. A provider gives you typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level — tools, structured output, and modalities only appear when the model supports them.
+
+## Use a provider
+
+The pattern is the same across providers: create an instance, get a model, and pass it to an agent:
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey` and optional `baseURL` and `headers` for custom endpoints or proxies.
+
+## Model helpers
+
+`model()` auto-detects the model type from the ID and routes to the correct provider endpoint. It's the most common way to get a model:
+
+```ts
+const textModel = openai.model("gpt-4o");
+const imageModel = openai.model("gpt-image-1");
+```
+
+Providers also expose modality-specific helpers for when you want the type system to enforce a specific model class:
+
+```ts
+const text = openai.text("gpt-4o");
+const image = openai.image("gpt-image-1");
+const audio = openai.audio("tts-1");
+const embedding = openai.embedding("text-embedding-3-small");
+```
+
+## Supported providers
+
+Better Agent ships built-in support for three providers:
+
+- **OpenAI** via `@better-agent/providers/openai` — supports text, image, video, audio, transcription, and embedding models
+- **Anthropic** via `@better-agent/providers/anthropic` — supports text and multimodal response models
+- **xAI** via `@better-agent/providers/xai` — supports text and image generation models
+
+All providers follow the same `create*` + `.model()` pattern, so switching between them requires minimal code changes.

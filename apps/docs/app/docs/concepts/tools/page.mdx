@@ -1,0 +1,68 @@
+---
+title: "Tools"
+description: "Let agents take structured actions."
+order: 8
+---
+
+# Tools
+
+Tools let agents do work. Instead of guessing, the model calls your code through a structured contract with validated input. A tool starts as a shared contract. You then materialize it as a server tool, a client tool, or a hosted provider tool.
+
+## Define a tool
+
+Use `defineTool()` to create a contract with a name, description, and input schema. Better Agent accepts any Standard Schema library (Zod, Valibot, ArkType) or raw JSON Schema:
+
+```ts
+import { defineTool } from "@better-agent/core";
+import { z } from "zod";
+
+const getWeather = defineTool({
+  name: "get_weather",
+  description: "Get the current weather for a location",
+  schema: z.object({
+    location: z.string(),
+    unit: z.enum(["celsius", "fahrenheit"]),
+  }),
+});
+```
+
+## Server tools
+
+Use `.server()` when the tool should run on the server. The handler receives validated input and a context with `signal` and `emit`:
+
+```ts
+const getWeatherTool = getWeather.server(async ({ location, unit }, { signal }) => {
+  const res = await fetch(`https://api.weather.example/${location}?unit=${unit}`, { signal });
+  return res.json();
+});
+```
+
+Add the tool to an agent by passing it to the `tools` array:
+
+```ts
+const assistant = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+  tools: [getWeatherTool],
+});
+```
+
+Use `emit` inside the handler to send custom events to the stream while the tool runs.
+
+## Client tools
+
+Use `.client()` when the tool should run on the user's device. The model calls it, Better Agent emits the call to the client, and the server waits for the client to return a result:
+
+```ts
+const showConfettiTool = defineTool({
+  name: "show_confetti",
+  description: "Shows a confetti animation in the UI",
+  schema: z.object({ color: z.string() }),
+}).client();
+```
+
+Client tools are model-callable like server tools. Better Agent does not execute them on the server — it waits for the client to submit a result. The client hook handles this automatically when you provide `toolHandlers`.
+
+## Error handling
+
+When a server tool throws, the default behavior sends the error back to the model so it can recover. Set `toolErrorMode: "throw"` on the agent definition to fail the run immediately instead. Use `onToolError` for custom recovery logic.

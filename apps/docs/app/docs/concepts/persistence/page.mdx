@@ -1,0 +1,53 @@
+---
+title: "Persistence"
+description: "Store and replay conversation history across runs."
+order: 9
+---
+
+# Persistence
+
+Persistence stores conversation state across runs. Use it for durable conversations, stream resumption, and active-run tracking. You can adopt only the stores you need, or skip persistence entirely for stateless flows.
+
+Better Agent provides three store contracts: **Conversation Store** (loads and saves the conversation timeline), **Stream Store** (persists emitted events for stream resumption), and **Runtime State Store** (tracks which run is active for a conversation).
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import {
+  createMemoryConversationStore,
+  createMemoryStreamStore,
+  createMemoryConversationRuntimeStateStore,
+} from "@better-agent/core";
+
+const app = betterAgent({
+  agents: [assistantAgent],
+  persistence: {
+    conversations: createMemoryConversationStore(),
+    stream: createMemoryStreamStore(),
+    runtimeState: createMemoryConversationRuntimeStateStore(),
+  },
+});
+```
+
+The in-memory stores are good for local development. For production, implement the contracts against your own database.
+
+## Conversation Store
+
+The conversation store loads and saves `ConversationItem[]` arrays. Its contract is two methods:
+
+- `load({ conversationId, agentName })` — returns stored items and a cursor, or `null` if none exist.
+- `save({ conversationId, agentName, items, expectedCursor })` — persists the updated array and returns the new cursor.
+
+Pass `expectedCursor` (the cursor from the `load` that started the run) to enable optimistic concurrency checking.
+
+## Stream Store
+
+The stream store persists events emitted during a run so disconnected clients can resume where they left off.
+
+- `open(streamId, meta)` — called when a stream starts.
+- `append(streamId, event)` — called for every emitted event.
+- `close(streamId)` — called when the run finishes.
+- `resume(streamId, afterSeq?)` — yields events after a given sequence number, historical first, then live if the stream is still active.
+
+## Runtime State Store
+
+The runtime state store tracks which run is currently active for a conversation. It prevents concurrent runs on the same conversation from conflicting.

@@ -1,0 +1,31 @@
+---
+title: "Plugins"
+description: "Ready-made plugins for auth, logging, rate limiting, IP allowlist, and sandbox environments."
+order: 0
+---
+
+# Plugins
+
+Better Agent ships a set of ready-made plugins from `@better-agent/plugins`. Register any combination of them when you create your app, and they apply to every agent.
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import {
+  authPlugin,
+  loggingPlugin,
+  rateLimitPlugin,
+  ipAllowlistPlugin,
+} from "@better-agent/plugins";
+
+export const app = betterAgent({
+  agents: [myAgent],
+  plugins: [
+    authPlugin({ apiKeys: [process.env.API_KEY!] }),
+    loggingPlugin(),
+    rateLimitPlugin({ windowMs: 60_000, max: 100 }),
+    ipAllowlistPlugin({ allow: ["10.0.0.0/8"] }),
+  ],
+});
+```
+
+For detailed configuration of each plugin, see the individual pages: [Auth](/docs/plugins/auth), Logging, Rate Limit, IP Allowlist, and Sandbox. To build your own plugin, see [Plugins](/docs/concepts/plugins) in the Concepts section.

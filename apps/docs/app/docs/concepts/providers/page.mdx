@@ -1,0 +1,59 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 11
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. Each provider gives you typed models with declared capabilities, and Better Agent uses those capabilities to gate features at the type level. Tools, structured output, and modalities only appear when the model actually supports them.
+
+## Use a Provider
+
+The pattern is the same across providers: create an instance, pick a model, and pass it to an agent.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey` and optional `baseURL` and `headers` for custom endpoints or proxies.
+
+## Model Helpers
+
+`model()` auto-detects the model type from the ID and routes to the correct provider endpoint. It's the most common way to get a model.
+
+```ts
+const textModel = openai.model("gpt-4o");
+const imageModel = openai.model("gpt-image-1");
+```
+
+Providers also expose modality-specific helpers when you want the type system to enforce a specific kind of model. OpenAI's full set:
+
+| Helper | Use it for |
+| --- | --- |
+| `openai.text(...)` | Text and multimodal response models |
+| `openai.image(...)` | Image generation and editing |
+| `openai.video(...)` | Video generation |
+| `openai.audio(...)` | Text-to-speech |
+| `openai.transcription(...)` | Audio transcription |
+| `openai.embedding(...)` | Embeddings |
+
+Anthropic provides `anthropic.text(...)` for text and multimodal response models. xAI provides `xai.text(...)` and `xai.image(...)`.
+
+## Supported Providers
+
+Better Agent ships adapters for three providers. Each has a dedicated page with model IDs, hosted tool configurations, and provider-specific options:
+
+- **OpenAI** — `@better-agent/providers/openai`
+- **Anthropic** — `@better-agent/providers/anthropic`
+- **xAI** — `@better-agent/providers/xai`

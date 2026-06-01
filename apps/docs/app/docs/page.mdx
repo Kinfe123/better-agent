@@ -1,0 +1,13 @@
+---
+title: "Introduction"
+description: "A TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 0
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building AI agents that are typed end-to-end, from server definition to browser call. It gives you a single app primitive that exposes both a programmatic API and a standards-based HTTP handler, so you can mount it in the server stack you already use — Next.js, Remix, SvelteKit, Hono, Express, Fastify, and more.
+
+The framework is built around a few composable ideas: agents that combine a model, instructions, tools, and context into one typed definition; a client that infers everything from that definition; and plugins that add cross-cutting behavior like auth, rate limiting, and logging without touching individual agents. Durable conversations, stream resumption, and human-in-the-loop approval are first-class, not bolted on.
+
+If you're starting fresh, run `npm create better-agent` to scaffold a project with your chosen framework, providers, and plugins already wired together. If you're integrating into an existing app, head to [Installation](/docs/get-started/installation) for manual setup instructions, or [Usage](/docs/get-started/usage) for a minimal working example. The [Concepts](/docs/concepts) section covers the mental models behind agents, tools, events, and the HTTP layer.

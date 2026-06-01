@@ -1,0 +1,101 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your project."
+order: 2
+---
+
+# Installation
+
+Better Agent is installed into any TypeScript project. The fastest path is the `create` CLI, which detects your framework, generates the needed files, and writes env var stubs. Manual setup gives you full control if you prefer.
+
+## Automatic
+
+Run one of the following commands to scaffold a new Better Agent app or patch it into an existing project:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI detects your framework, lets you choose providers and plugins, generates the Better Agent server and client files, and writes the required environment variable entries. Supported frameworks are `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, `react-router`, and `generic`.
+
+To patch Better Agent into an existing project without scaffolding a new one:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual
+
+Create a TypeScript project if you don't have one, then install the packages you need.
+
+**Core** — agents, tools, events, and runtime primitives:
+
+```bash
+npm install @better-agent/core
+```
+
+**Client** — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact:
+
+```bash
+npm install @better-agent/client
+```
+
+**Providers** — adapters for OpenAI, Anthropic, and xAI:
+
+```bash
+npm install @better-agent/providers
+```
+
+**Plugins** — auth, logging, rate limiting, IP allowlist, and sandbox:
+
+```bash
+npm install @better-agent/plugins
+```
+
+**CLI** — type generation for portable client packages:
+
+```bash
+npm install -D @better-agent/cli
+```
+
+## Environment Variables
+
+After installation, set the API key for your chosen provider.
+
+**Required — at least one provider key:**
+
+- `OPENAI_API_KEY` — API key for OpenAI models.
+- `ANTHROPIC_API_KEY` — API key for Anthropic models.
+- `XAI_API_KEY` — API key for xAI models.
+
+**Required for secured HTTP routes:**
+
+- `BETTER_AGENT_SECRET` — Bearer token for the built-in HTTP handler. Requests must include `Authorization: Bearer <secret>` when this is set.
+
+**Optional — for custom OpenAI-compatible endpoints:**
+
+- `OPENAI_BASE_URL` — Override the base URL used by the OpenAI provider, useful for proxies or compatible APIs.
+
+**Optional — for sandbox integrations:**
+
+- `E2B_API_KEY` — API key for E2B sandbox environments.
+- `DAYTONA_API_KEY` — API key for Daytona sandbox environments.
+- `DAYTONA_TARGET` — Target workspace for Daytona.
+
+> **Note:** The `create` CLI writes these stubs for you automatically. You only need to fill in the values.
+
+## Next Steps
+
+Go to [Usage](/docs/get-started/usage) to build your first agent, server, and client in under five minutes.

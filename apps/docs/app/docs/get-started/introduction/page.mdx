@@ -1,0 +1,30 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building AI agent apps that are typed end-to-end, fit into your existing stack, and scale from a single stateless agent to durable multi-turn workflows with human-in-the-loop controls.
+
+## Why It Exists
+
+Most agent libraries ask you to accept their runtime, their HTTP layer, or their conversation model. Better Agent doesn't. The framework is designed around four principles:
+
+1. **Typed end-to-end.** Agent definitions, run context, structured output, and client calls all share a single type graph. Mistakes are caught at compile time, not at runtime.
+2. **Fits your stack.** The HTTP handler is a standard `Request → Response` function. Mount it wherever you already handle requests — Next.js, Remix, Hono, Express, Fastify, or anything else.
+3. **Reusable by design.** Plugins package cross-cutting behavior — auth, logging, rate limiting, lifecycle hooks — that you register once and apply everywhere.
+4. **Durable when you need it.** Persistence contracts let you store conversations, resume streams, and track active runs on top of your own database, with zero vendor lock-in.
+
+## Core Features
+
+Define an agent once with `defineAgent` and its model, tools, context schema, and output schema stay typed together across your entire app. The `createClient` function infers all of that from the server type, so autocomplete knows which agents exist, which context fields each one needs, and what shape the response will have.
+
+Providers — OpenAI, Anthropic, and xAI — each expose typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level: tools, structured output, and modalities only appear on the client when the model actually supports them.
+
+The event system streams structured events as a run progresses: text deltas, tool calls, tool results, step boundaries, and run lifecycle markers. You can iterate over them with `for await`, or observe them with an `onEvent` callback.
+
+## Where To Go Next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages, or [Usage](/docs/get-started/usage) to see a minimal working server and client. Once you have the basics running, the [Concepts](/docs/concepts) section explains agents, tools, events, providers, and persistence in detail.

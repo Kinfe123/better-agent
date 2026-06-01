@@ -1,0 +1,35 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It exists because agent apps should be typed end-to-end — from definitions to client calls — and the framework should fit into your existing stack rather than replacing it.
+
+## Why it exists
+
+Most agent frameworks make you choose between type safety and flexibility. Better Agent treats both as non-negotiable. Your agent names, context schemas, tool contracts, and structured output are all inferred directly from the server definition. Nothing leaks to the client unless you explicitly expose it, and nothing gets out of sync.
+
+The framework also treats your existing infrastructure as a first-class citizen. You mount it in whatever HTTP server you already run. You bring your own database for persistence. Your auth, your rate limiting, and your logging are all pluggable with a clean contract — or you use the built-in plugins that ship with the framework.
+
+## Core features
+
+**Typed agents.** Define an agent once and keep its model, tools, context, and output schema typed together. The TypeScript compiler catches mismatches between server definitions and client usage at build time.
+
+**Type-safe client.** Infer agent names, inputs, outputs, and hooks directly from your server app. When the server changes, the client errors surface immediately.
+
+**Multi-provider.** Use the same app shape across OpenAI, Anthropic, and xAI instead of rewriting your runtime for each one. Better Agent uses declared model capabilities to gate features at the type level.
+
+**Framework agnostic.** Mount Better Agent in Next.js, SvelteKit, TanStack Start, Remix, Astro, Nuxt, SolidStart, React Router, Express, Fastify, Hono, Elysia, or NestJS — anywhere that gives you a `Request` object.
+
+**Event driven.** Every run emits structured events for messages, tool calls, approvals, and streaming state. You consume them with an async iterator or an `onEvent` callback.
+
+**Durable runs.** Add minimal persistence stores when you need resumable conversations and stream recovery. You implement the store contracts on top of your existing database.
+
+**Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints without rebuilding the core loop. Plugins apply across every agent in the app.
+
+## Where to go next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages and create your first app, then [Usage](/docs/get-started/usage) to add a typed client and UI. The [Concepts](/docs/concepts) section explains how the core pieces — agents, tools, events, providers, and persistence — fit together.

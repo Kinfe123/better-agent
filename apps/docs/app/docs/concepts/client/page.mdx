@@ -1,0 +1,108 @@
+---
+title: "Client"
+description: "Type-safe HTTP client for Better Agent servers."
+order: 8
+---
+
+# Client
+
+The Better Agent client is a typed HTTP client for talking to a Better Agent server. It gives you full inference for agent names, context schemas, tool contracts, and structured output with zero runtime overhead.
+
+## Create a client
+
+Import your server app type to get full inference:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { app } from "./server";
+
+const client = createClient<typeof app>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your client and server are in separate packages, use the generated type from the CLI instead:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { BAClientApp } from "./better-agent.types";
+
+const client = createClient<BAClientApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `baseURL` | Better Agent API base URL. Required. |
+| `secret` | Bearer token sent with every request. Required. |
+| `headers` | Default headers merged into every request. |
+| `fetch` | Custom fetch implementation. |
+
+## run
+
+Runs an agent and waits for the final result.
+
+```ts
+const result = await client.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+Pass per-request options to add an abort signal, override headers, or observe the raw response:
+
+```ts
+const controller = new AbortController();
+
+const result = await client.run("assistant", { input: "Hello" }, {
+  signal: controller.signal,
+  headers: { "X-Request-Id": "req_abc" },
+});
+```
+
+## stream
+
+Streams agent execution events to the client. Returns an async iterable and a `result` promise.
+
+```ts
+const stream = client.stream("assistant", {
+  input: "Summarize this document...",
+});
+
+for await (const event of stream.events) {
+  if (event.type === "TEXT_MESSAGE_CONTENT") {
+    process.stdout.write(event.delta);
+  }
+}
+
+const result = await stream.result;
+```
+
+## Type safety
+
+The type parameter on `createClient` carries your full server definition and gives you:
+
+- **Typed agent names** — autocomplete and compile errors for invalid names.
+- **Typed context** — the `context` field is validated against the agent's `contextSchema`.
+- **Typed structured output** — `result.structured` infers from the agent's `outputSchema`.
+- **Typed tool handlers** — handler input is inferred from the tool's schema.
+
+```ts
+// @ts-expect-error: "asistant" is not a valid agent name
+await client.run("asistant", { input: "Hello" });
+
+await client.run("support", {
+  input: "Help me",
+  context: { userId: "user_123", plan: "pro" },
+});
+```
+
+## Framework hooks
+
+The `@better-agent/client` package ships adapters for React (`/react`), Vue (`/vue`), Svelte (`/svelte`), Solid (`/solid`), and Preact (`/preact`). Each adapter exposes a `useAgent` hook (or equivalent store) that manages messages, status, and sends. See the integration guides for framework-specific examples.

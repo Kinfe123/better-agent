@@ -1,0 +1,73 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 10
+---
+
+# Installation
+
+Better Agent is installed as a set of focused packages. You only add what you need: the core runtime, a client for your UI framework, providers for the model APIs you use, and optional plugins.
+
+## Packages
+
+- **`@better-agent/core`** — Agents, tools, events, and runtime primitives. Required.
+- **`@better-agent/client`** — Typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact.
+- **`@better-agent/providers`** — Adapters for OpenAI, Anthropic, and xAI.
+- **`@better-agent/plugins`** — Guards, lifecycle hooks, middleware, and runtime extensions.
+- **`@better-agent/cli`** — Type generation for typed client packages and app definitions.
+
+## Automatic setup
+
+The fastest way to get started is with the create CLI. It detects your framework, generates the Better Agent files, lets you pick providers and plugins, and writes the required env vars and package entries.
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+To patch Better Agent into an existing project without scaffolding a new one, pass `--mode patch`:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+The CLI supports `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+## Manual setup
+
+Use the manual path when you want full control over the project structure.
+
+**1. Create a TypeScript project** if you don't have one:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**2. Install the packages you need:**
+
+```bash
+npm install @better-agent/core @better-agent/client @better-agent/providers
+```
+
+**3. Add your provider API key to `.env`:**
+
+```bash
+OPENAI_API_KEY=sk-...
+BETTER_AGENT_SECRET=your-secret
+```
+
+From here, follow [Usage](/docs/get-started/usage) to define your first agent and connect a typed client.

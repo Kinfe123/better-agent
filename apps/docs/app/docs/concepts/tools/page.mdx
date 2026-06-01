@@ -1,0 +1,87 @@
+---
+title: "Tools"
+description: "Let agents take structured actions."
+order: 9
+---
+
+# Tools
+
+Tools let agents do work. Instead of guessing, the model calls your code through a structured contract with validated input. A tool starts as a shared contract. You then materialize it as a server tool, a client tool, or a hosted provider tool.
+
+## Define a tool
+
+Use `defineTool()` to create a contract with a name, description, and input schema. Better Agent accepts any schema that follows the Standard Schema spec (Zod, Valibot, ArkType) as well as raw JSON Schema.
+
+```ts
+import { defineTool } from "@better-agent/core";
+import { z } from "zod";
+
+const getWeather = defineTool({
+  name: "get_weather",
+  description: "Get the current weather for a location",
+  schema: z.object({
+    location: z.string(),
+    unit: z.enum(["celsius", "fahrenheit"]),
+  }),
+});
+```
+
+## Server tools
+
+Use `.server()` when the tool should run on the server. The handler receives validated input and a context with `signal` and `emit`.
+
+```ts
+const getWeatherTool = getWeather.server(async ({ location, unit }, { signal }) => {
+  const res = await fetch(
+    `https://api.weather.example/${location}?unit=${unit}`,
+    { signal }
+  );
+  return res.json();
+});
+```
+
+Add the server tool to an agent:
+
+```ts
+import { defineAgent } from "@better-agent/core";
+
+const assistant = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+  tools: [getWeatherTool],
+});
+```
+
+Use `emit` to send custom events to the stream while the tool runs:
+
+```ts
+const analyzeTool = analyze.server(async ({ query }, { emit }) => {
+  await emit({ type: "DATA_PART", data: { stage: "searching" } });
+  const results = await runSearch(query);
+  return results;
+});
+```
+
+## Client tools
+
+Use `.client()` when the tool should run on the user's device. The model calls it, Better Agent emits the call to the client, and the server waits for the client to return a result.
+
+```ts
+const showConfetti = defineTool({
+  name: "show_confetti",
+  description: "Shows a confetti animation in the UI",
+  schema: z.object({ color: z.string() }),
+});
+
+const showConfettiTool = showConfetti.client();
+```
+
+Better Agent does not execute client tools on the server. It emits the call and waits for the client to submit a result through the active stream.
+
+## Human-in-the-loop approvals
+
+Add `approval` to a tool contract when human sign-off is required before the handler runs. See [Human in the Loop](/docs/concepts/hil) for static and dynamic approval policies, timeouts, and the full resolver API.
+
+## Error handling
+
+When a server tool throws, the default behavior sends the error back to the model so it can recover. Use `toolErrorMode: "throw"` on the agent to stop the run immediately on any tool failure instead.

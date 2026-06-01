@@ -1,0 +1,101 @@
+---
+title: "Installation"
+description: "Install and configure Better Agent."
+order: 10
+---
+
+# Installation
+
+Better Agent is a TypeScript framework. Install it into a TypeScript project — either a new one you scaffold with the create CLI, or an existing app you patch.
+
+## Automatic setup
+
+The fastest way to get started is with the `create` CLI. It detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required environment variables and package entries.
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+To add Better Agent to an existing project without scaffolding a new one, use patch mode:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+The CLI supports the following frameworks: `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+## Manual setup
+
+Use manual setup when you want full control over the project structure. Create a TypeScript project if you don't have one, then install the packages you need.
+
+**Core** — agents, tools, events, and runtime primitives:
+
+```bash
+npm install @better-agent/core
+```
+
+**Client** — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact:
+
+```bash
+npm install @better-agent/client
+```
+
+**Providers** — adapters for model APIs such as OpenAI, Anthropic, and xAI:
+
+```bash
+npm install @better-agent/providers
+```
+
+**Plugins** — guards, lifecycle hooks, middleware, and runtime extensions:
+
+```bash
+npm install @better-agent/plugins
+```
+
+**CLI** — type generation for typed client packages and app definitions:
+
+```bash
+npm install -D @better-agent/cli
+```
+
+## Environment variables
+
+After installation, set the API key for your chosen model provider. For OpenAI:
+
+```bash
+OPENAI_API_KEY=sk-...
+```
+
+For Anthropic:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+For xAI:
+
+```bash
+XAI_API_KEY=...
+```
+
+You also need a secret for the Better Agent HTTP handler. This is the bearer token your client sends with every request:
+
+```bash
+BETTER_AGENT_SECRET=your-secret-here
+```
+
+## Next steps
+
+Once you have the packages installed and your environment variables set, head to [Usage](/docs/get-started/usage) to build your first agent app with a server, typed client, and UI.

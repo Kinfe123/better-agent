@@ -1,0 +1,62 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 10
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. A provider gives you typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level — tools, structured output, and modalities only appear when the model actually supports them.
+
+## Use a Provider
+
+The pattern is the same across providers: create an instance with your API key, get a model, and pass it to an agent.
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey` and optional `baseURL` and `headers` for custom endpoints or proxies.
+
+## Model helpers
+
+Use `model()` to auto-detect the model type from the ID and route to the correct provider endpoint. This is the most common way to get a model.
+
+```ts
+const textModel = openai.model("gpt-4o");
+const imageModel = openai.model("gpt-image-1");
+```
+
+Providers can also expose modality-specific helpers for explicit model selection:
+
+```ts
+const text = openai.text("gpt-4o");
+const image = openai.image("gpt-image-1");
+const audio = openai.audio("tts-1");
+const transcription = openai.transcription("gpt-4o-transcribe");
+const embedding = openai.embedding("text-embedding-3-small");
+```
+
+Not all providers support all helpers. `model()` is always available. Modality helpers are convenience shortcuts when you want the type system to enforce a specific capability.
+
+## Supported Providers
+
+Better Agent ships with providers for **OpenAI**, **Anthropic**, and **xAI**. Each provider package lives under `@better-agent/providers`.
+
+**OpenAI** supports text, image, video, audio, transcription, and embedding models. Set `OPENAI_API_KEY` and optionally `OPENAI_BASE_URL` for proxies.
+
+**Anthropic** supports text and multimodal response models. Set `ANTHROPIC_API_KEY`.
+
+**xAI** supports text and image models. Set `XAI_API_KEY`.
+
+All three providers follow the same `createProvider({ apiKey, baseURL?, headers? })` pattern, so switching providers requires changing only the import and the model ID.

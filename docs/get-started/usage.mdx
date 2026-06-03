@@ -1,0 +1,95 @@
+---
+title: "Usage"
+description: "Create your first agent app."
+order: 3
+---
+
+# Usage
+
+Build a minimal Better Agent app in three files: `server.ts`, `client.ts`, and a UI component. This gives you a working chat loop with end-to-end type safety.
+
+## 1. Define the server
+
+Create a Better Agent app with one agent and export it so the client can read its type.
+
+```ts
+// server.ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-4o"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET,
+});
+
+export default app;
+```
+
+## 2. Create a typed client
+
+Import the server app's type to keep agent names, inputs, outputs, and tool contracts in sync with the backend.
+
+```ts
+// client.ts
+import { createClient } from "@better-agent/client";
+import type app from "./server";
+
+export const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+> **Note:** When your client and server are in separate packages, generate a portable `.d.ts` file with the CLI instead of importing `server.ts` directly. See [TypeScript](/docs/concepts/typescript) for the full workflow.
+
+## 3. Connect the UI
+
+Use the `useAgent` hook for React, or the equivalent adapter for your framework:
+
+```tsx
+// src/App.tsx
+import { useState } from "react";
+import { useAgent } from "@better-agent/client/react";
+import { client } from "./client";
+
+export default function Page() {
+  const [input, setInput] = useState("");
+
+  const { messages, status, sendMessage } = useAgent(client, {
+    agent: "helloAgent",
+  });
+
+  return (
+    <div>
+      <ul>
+        {messages.map((message) => (
+          <li key={message.localId}>
+            {message.role}:{" "}
+            {message.parts
+              .map((part) => (part.type === "text" ? part.text : ""))
+              .join("")}
+          </li>
+        ))}
+      </ul>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button onClick={() => { sendMessage(input); setInput(""); }}>
+        Send
+      </button>
+      <p>Status: {status}</p>
+    </div>
+  );
+}
+```
+
+From here you can add [Tools](/docs/concepts/tools), define a `contextSchema` on your agent for typed runtime data, enable [Persistence](/docs/concepts/persistence) for durable conversations, or add [Plugins](/docs/concepts/plugins) for auth and logging. The shape of your app stays the same as you grow.

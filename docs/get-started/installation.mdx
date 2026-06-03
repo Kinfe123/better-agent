@@ -1,0 +1,93 @@
+---
+title: "Installation"
+description: "Set up Better Agent in your project."
+order: 2
+---
+
+# Installation
+
+Install Better Agent in your TypeScript project. You can use the `create-better-agent` CLI for automatic setup, or install and configure the packages manually.
+
+## Packages
+
+Better Agent is split into focused packages so you only install what you need:
+
+- `@better-agent/core` — agents, tools, events, and runtime primitives.
+- `@better-agent/client` — typed HTTP client plus framework hooks for React, Vue, Svelte, Solid, and Preact.
+- `@better-agent/providers` — adapters for model APIs such as OpenAI, Anthropic, and xAI.
+- `@better-agent/plugins` — guards, lifecycle hooks, middleware, and runtime extensions.
+- `@better-agent/adapters` — framework adapters for Express, Fastify, and other server integrations.
+- `@better-agent/cli` — type generation for typed client packages and app definitions.
+
+## Automatic
+
+The `create-better-agent` CLI is the recommended approach. It scaffolds a new Better Agent app or patches Better Agent into an existing project:
+
+```bash
+npm create better-agent
+```
+
+```bash
+pnpm create better-agent
+```
+
+```bash
+yarn create better-agent
+```
+
+```bash
+bun create better-agent
+```
+
+The CLI detects your framework, generates the Better Agent files, lets you choose providers and plugins, and writes the required environment variable stubs. Supported frameworks: `generic`, `nextjs`, `remix`, `sveltekit`, `astro`, `nuxt`, `tanstack-start`, `solidstart`, and `react-router`.
+
+To patch Better Agent into an existing project rather than scaffold a new one:
+
+```bash
+npm create better-agent@latest -- --mode patch
+```
+
+## Manual
+
+Use the manual setup if you want full control over the project structure.
+
+**Step 1.** Create a TypeScript project if you don't have one:
+
+```bash
+mkdir my-agent && cd my-agent
+npm init -y
+npm install typescript -D
+npx tsc --init
+```
+
+**Step 2.** Install the core packages:
+
+```bash
+npm install @better-agent/core @better-agent/client @better-agent/providers
+```
+
+**Step 3.** Add your provider API key to `.env`:
+
+```bash
+OPENAI_API_KEY=sk-...
+BETTER_AGENT_SECRET=your-secret
+```
+
+**Step 4.** Create a minimal `server.ts` to verify everything is wired up:
+
+```ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const hello = defineAgent({
+  name: "hello",
+  model: openai.model("gpt-4o"),
+  instruction: "You are a helpful assistant.",
+});
+
+export const app = betterAgent({ agents: [hello], baseURL: "/api" });
+```
+
+If this compiles without errors, your setup is complete. Continue to [Usage](/docs/get-started/usage) to add a typed client and UI.

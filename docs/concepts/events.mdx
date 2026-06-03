@@ -1,0 +1,77 @@
+---
+title: "Events"
+description: "Observe what happens during an agent run in real time."
+order: 6
+---
+
+# Events
+
+Events stream what happens during a run as it happens. Every event has a `type` and a `timestamp`. Most apps only handle a small subset — usually `TEXT_MESSAGE_CONTENT` for streaming text and `RUN_FINISHED` to know when the run is done.
+
+## Consuming events
+
+### Streaming
+
+Use `stream.events` to iterate over events as they arrive:
+
+```ts
+const stream = await app.stream("assistant", {
+  input: "What's the weather in Tokyo?",
+});
+
+for await (const event of stream.events) {
+  switch (event.type) {
+    case "TEXT_MESSAGE_CONTENT":
+      process.stdout.write(event.delta);
+      break;
+    case "TOOL_CALL_RESULT":
+      console.log("Tool result:", event.result);
+      break;
+    case "RUN_FINISHED":
+      console.log("Done");
+      break;
+  }
+}
+```
+
+The `stream` object also exposes `runId` and a `result` promise for the final run result.
+
+### onEvent callback
+
+Use `onEvent` on run options when you don't need the full stream handle:
+
+```ts
+await app.run("assistant", {
+  input: "Summarize this document...",
+  onEvent: (event) => {
+    if (event.type === "STEP_FINISH") {
+      console.log(`Step ${event.stepIndex + 1} done`);
+    }
+  },
+});
+```
+
+## Run lifecycle events
+
+These events mark the boundaries of a run:
+
+| Event | Description |
+| --- | --- |
+| `RUN_STARTED` | Run began. Carries `runId`, `agentName`, `conversationId`, and `runInput`. |
+| `RUN_FINISHED` | Run completed successfully. |
+| the required value | Run ended with an error. |
+| `STEP_FINISH` | A single model step completed. Carries `stepIndex` and `terminationReason`. |
+
+## Text and tool events
+
+| Event | Description |
+| --- | --- |
+| `TEXT_MESSAGE_CONTENT` | A chunk of text from the model. Carries `delta`. |
+| `TOOL_CALL_START` | The model initiated a tool call. |
+| `TOOL_CALL_RESULT` | The tool returned a result. |
+| the required value | A human-in-the-loop tool is waiting for approval. |
+| `TOOL_APPROVAL_UPDATED` | Approval was granted, denied, or expired. |
+
+## Next steps
+
+For persistent event storage that lets disconnected clients resume a stream, see [Persistence](/docs/concepts/persistence). For human-in-the-loop approval flows that emit the required value, see [Human in the Loop](/docs/concepts/hil).

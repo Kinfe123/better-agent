@@ -1,0 +1,38 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It exists because agent apps deserve the same quality of tooling that the rest of the TypeScript ecosystem takes for granted: end-to-end type safety, framework flexibility, and first-class persistence.
+
+## Why It Exists
+
+Most agent frameworks make you choose between type safety and flexibility. Better Agent refuses that trade-off. The four problems it solves directly:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack, including your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## Features
+
+**Typed Agents.** Define an agent once and keep its model, tools, context, and output schema typed together. Changing a context field or renaming an agent surfaces as a compile error everywhere it's used.
+
+**Type-Safe Client.** Infer agent names, inputs, outputs, and hooks directly from your server app. The client never goes out of sync with the server because it reads the same types.
+
+**Multi-Provider.** Use the same app shape across OpenAI, Anthropic, and xAI instead of rewriting your runtime for each one. Provider capabilities are declared at the type level, so tools and structured output only appear when the model supports them.
+
+**Plugins.** Add guards, lifecycle hooks, middleware, and custom endpoints without rebuilding the core loop. Register them once at the app level and they apply to every agent.
+
+**Framework Agnostic.** Mount Better Agent in the server stack you already use. Next.js, SvelteKit, TanStack Start, Remix, Astro, Nuxt, Hono, Express, Fastify, Elysia — if it gives you a `Request` object, it works.
+
+**Event Driven.** Listen to structured events for messages, tool calls, approvals, and streaming state as runs progress. Every event has a `type` and a `timestamp`.
+
+**Durable Runs.** Add minimal persistence stores when you need resumable streams and durable conversation history. You implement them on top of your existing database.
+
+## Where to go next
+
+Head to [Installation](/docs/get-started/installation) to set up the packages and your first app, then [Usage](/docs/get-started/usage) to add a typed client and UI. After that, [Concepts](/docs/concepts) explains how the core pieces fit together.

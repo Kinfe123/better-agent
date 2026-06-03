@@ -1,0 +1,97 @@
+---
+title: "Quickstart"
+description: "Run Better Agent for the first time."
+order: 20
+---
+
+# Quickstart
+
+This guide walks you through a minimal Better Agent app split across three files: a server definition, a typed client, and a UI component. By the end you'll have a running chat loop with full end-to-end type safety.
+
+## 1. Define the server
+
+Create a Better Agent app with one agent. Export the app so its type is available to the client.
+
+```ts
+// server.ts
+import { betterAgent, defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const helloAgent = defineAgent({
+  name: "helloAgent",
+  model: openai.text("gpt-4o"),
+  instruction: "You are a friendly assistant. Keep answers short.",
+});
+
+const app = betterAgent({
+  agents: [helloAgent],
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET,
+});
+
+export default app;
+```
+
+## 2. Create a typed client
+
+Import the server app type so every agent name, context field, tool contract, and structured output is checked at compile time.
+
+```ts
+// client.ts
+import { createClient } from "@better-agent/client";
+import type app from "./server";
+
+export const client = createClient<typeof app>({
+  baseURL: "/api",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your server and client live in separate packages, generate a portable type file with the CLI instead of importing `server.ts` directly. See [TypeScript](/docs/concepts/typescript) for details.
+
+## 3. Connect the UI
+
+Use the `useAgent` hook from `@better-agent/client/react` to wire the client into a React component:
+
+```tsx
+// src/App.tsx
+import { useState } from "react";
+import { useAgent } from "@better-agent/client/react";
+import { client } from "./client";
+
+export default function Page() {
+  const [input, setInput] = useState("");
+
+  const { messages, status, sendMessage } = useAgent(client, {
+    agent: "helloAgent",
+  });
+
+  return (
+    <div>
+      <ul>
+        {messages.map((message) => (
+          <li key={message.localId}>
+            {message.role}:{" "}
+            {message.parts
+              .map((part) => (part.type === "text" ? part.text : ""))
+              .join("")}
+          </li>
+        ))}
+      </ul>
+      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <button onClick={() => { sendMessage(input); setInput(""); }}>
+        Send
+      </button>
+      <p>Status: {status}</p>
+    </div>
+  );
+}
+```
+
+> **Note:** Framework adapters are available for Vue, Svelte, Solid, and Preact in addition to React. See the integration guides for each.
+
+From here you can add tools with `defineTool()`, require human approval before sensitive tool calls, define a `contextSchema` to pass typed runtime data to your agents, or enable persistence for durable conversations. The [Concepts](/docs/concepts) section covers each of these in full.

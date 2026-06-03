@@ -1,0 +1,88 @@
+import { defineDocs } from "@farming-labs/docs";
+import { colorful } from "@farming-labs/theme/colorful";
+
+export default defineDocs({
+  entry: "docs",
+  theme: colorful(),
+  ordering: [
+    {
+      "slug": "quickstart"
+    },
+    {
+      "slug": "installation"
+    },
+    {
+      "slug": "get-started",
+      "children": [
+        {
+          "slug": "introduction"
+        },
+        {
+          "slug": "installation"
+        },
+        {
+          "slug": "usage"
+        }
+      ]
+    },
+    {
+      "slug": "concepts",
+      "children": [
+        {
+          "slug": "agent"
+        },
+        {
+          "slug": "api"
+        },
+        {
+          "slug": "cli"
+        },
+        {
+          "slug": "client"
+        },
+        {
+          "slug": "errors"
+        },
+        {
+          "slug": "events"
+        },
+        {
+          "slug": "hil"
+        },
+        {
+          "slug": "mcp"
+        },
+        {
+          "slug": "persistence"
+        },
+        {
+          "slug": "plugins"
+        },
+        {
+          "slug": "providers"
+        },
+        {
+          "slug": "structured-output"
+        },
+        {
+          "slug": "tools"
+        },
+        {
+          "slug": "typescript"
+        }
+      ]
+    },
+    {
+      "slug": "plugins",
+      "children": [
+        {
+          "slug": "auth"
+        }
+      ]
+    }
+  ],
+  metadata: {
+    titleTemplate: "%s – Docs",
+    description: "Managed by @farming-labs/docs Cloud",
+  },
+});

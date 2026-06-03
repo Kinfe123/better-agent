@@ -1,0 +1,64 @@
+---
+title: "Auth"
+description: "API key auth plugin with static keys or custom validation."
+order: 1
+---
+
+# Auth
+
+The auth plugin blocks requests unless they provide a valid API key. Use static keys for simple setups, or provide your own validation logic for database-backed or agent-specific rules.
+
+## Basic usage
+
+By default the plugin reads the key from the `x-api-key` header:
+
+```ts
+import { authPlugin } from "@better-agent/plugins";
+
+const plugin = authPlugin({
+  apiKeys: ["dev-key"],
+});
+```
+
+## Custom header
+
+Use `header` when your key lives in another header:
+
+```ts
+const plugin = authPlugin({
+  header: "authorization",
+  apiKeys: ["Bearer dev-key"],
+});
+```
+
+## Custom validation
+
+Use `getKey` and `validate` when you need your own auth logic — keys from a database, another service, or agent-specific rules:
+
+```ts
+const plugin = authPlugin({
+  getKey: ({ request }) => request.headers.get("authorization"),
+  validate: async ({ key, agentName }) => {
+    const record = await db.apiKeys.findUnique({ where: { key } });
+    return record !== null;
+  },
+});
+```
+
+If validation fails, the plugin returns `401 Unauthorized`.
+
+## Register the plugin
+
+```ts
+import { betterAgent } from "@better-agent/core";
+import { authPlugin } from "@better-agent/plugins";
+
+export const app = betterAgent({
+  agents: [myAgent],
+  plugins: [
+    authPlugin({ apiKeys: [process.env.BETTER_AGENT_API_KEY!] }),
+  ],
+});
+```
+
+> **Note:** The `BETTER_AGENT_SECRET` field on `betterAgent()` is a separate bearer-token check on the built-in HTTP routes. The auth plugin is an additional layer you control entirely.

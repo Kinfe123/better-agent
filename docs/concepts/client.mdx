@@ -1,0 +1,111 @@
+---
+title: "Client"
+description: "Type-safe HTTP client for Better Agent servers."
+order: 4
+---
+
+# Client
+
+The Better Agent client is a typed HTTP client for talking to a Better Agent server. It gives you full inference for agent names, context schemas, tool contracts, and structured output, with zero runtime overhead.
+
+## Create a client
+
+Import your server app type to get full inference:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { app } from "./server";
+
+const client = createClient<typeof app>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+When your client and server are in separate packages, use the generated type from the CLI instead:
+
+```ts
+import { createClient } from "@better-agent/client";
+import type { BAClientApp } from "./better-agent.types";
+
+const client = createClient<BAClientApp>({
+  baseURL: "https://api.example.com",
+  secret: process.env.BETTER_AGENT_SECRET!,
+});
+```
+
+| Field | Description |
+| --- | --- |
+| `baseURL` | Better Agent API base URL. Required. |
+| `secret` | Bearer token sent with every request. Required. |
+| `headers` | Default headers merged into every request. |
+| `fetch` | Custom fetch implementation. |
+
+## Type safety
+
+The type parameter on `createClient` carries your full server definition:
+
+- **Typed agent names** — autocomplete and compile errors for invalid names.
+- **Typed context** — the `context` field is validated against the agent's `contextSchema`.
+- **Typed structured output** — `result.structured` is inferred from the agent's `outputSchema`.
+- **Typed tool handlers** — handler input is inferred from the tool's schema.
+
+```ts
+// TypeScript catches this at compile time:
+// @ts-expect-error "asistant" is not a valid agent name
+await client.run("asistant", { input: "Hello" });
+
+// Context is fully typed:
+await client.run("support", {
+  input: "Help me",
+  context: { userId: "user_123", plan: "pro" },
+});
+```
+
+## run
+
+Runs an agent and waits for the final result:
+
+```ts
+const result = await client.run("assistant", {
+  input: "What is the weather in Tokyo?",
+  conversationId: "conv_123",
+});
+
+console.log(result.response.finishReason);
+console.log(result.response.output);
+```
+
+Per-request options let you override headers, pass an abort signal, or inspect the raw response:
+
+```ts
+const controller = new AbortController();
+
+const result = await client.run("assistant", { input: "Hello" }, {
+  signal: controller.signal,
+  headers: { "X-Request-Id": "req_abc" },
+  onResponse: (response) => console.log("Status:", response.status),
+});
+```
+
+## stream
+
+Streams an agent run and iterates events as they arrive:
+
+```ts
+const stream = client.stream("assistant", {
+  input: "Summarize this document...",
+});
+
+for await (const event of stream.events) {
+  if (event.type === "TEXT_MESSAGE_CONTENT") {
+    process.stdout.write(event.delta);
+  }
+}
+
+const result = await stream.result;
+```
+
+## Next steps
+
+For the full type inference picture, see [TypeScript](/docs/concepts/typescript). To generate a portable type file for cross-package use, see [CLI](/docs/concepts/cli).

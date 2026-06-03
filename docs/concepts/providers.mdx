@@ -1,0 +1,63 @@
+---
+title: "Providers"
+description: "Connect Better Agent to model APIs."
+order: 11
+---
+
+# Providers
+
+Providers connect Better Agent to model APIs. A provider gives you typed models with declared capabilities. Better Agent uses those capabilities to gate features at the type level — tools, structured output, and modalities only appear on the agent definition when the model supports them.
+
+## Use a provider
+
+The pattern is the same across all providers: create an instance, get a model, and pass it to an agent:
+
+```ts
+import { defineAgent } from "@better-agent/core";
+import { createOpenAI } from "@better-agent/providers/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const agent = defineAgent({
+  name: "assistant",
+  model: openai.model("gpt-4o"),
+});
+```
+
+Every provider accepts at minimum `apiKey` and optional `baseURL` and `headers` for custom endpoints or proxies:
+
+```ts
+const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+  headers: { "X-Custom-Header": "value" },
+});
+```
+
+## Model helpers
+
+`model()` auto-detects the model type from the ID and routes to the correct provider endpoint. It's the most common way to get a model:
+
+```ts
+const textModel = openai.model("gpt-4o");
+const imageModel = openai.model("gpt-image-1");
+```
+
+Providers also expose modality-specific helpers when you want the type system to enforce a specific capability:
+
+```ts
+const text = openai.text("gpt-4o");
+const image = openai.image("gpt-image-1");
+const audio = openai.audio("tts-1");
+const embedding = openai.embedding("text-embedding-3-small");
+```
+
+## Supported providers
+
+**OpenAI** — `createOpenAI` from `@better-agent/providers/openai`. Set `OPENAI_API_KEY`. Supports text, image, video, audio, transcription, and embedding models.
+
+**Anthropic** — `createAnthropic` from `@better-agent/providers/anthropic`. Set `ANTHROPIC_API_KEY`. Supports text and multimodal response models.
+
+**xAI** — `createXAI` from `@better-agent/providers/xai`. Set `XAI_API_KEY`. Supports text, image, and hosted tool models.

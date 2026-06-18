@@ -1,0 +1,74 @@
+---
+title: "Events"
+description: "Observe what happens during an agent run in real time."
+order: 10
+---
+
+# Events
+
+Events stream what happens during a run as it happens. Every event has a `type` and a `timestamp`. Most apps only handle a small subset — the ones relevant to their UI or logging pipeline.
+
+## Consuming Events
+
+### Streaming
+
+Use `stream.events` to iterate over events as they arrive.
+
+```ts
+const stream = await app.stream("assistant", {
+  input: "What's the weather in Tokyo?",
+});
+
+for await (const event of stream.events) {
+  switch (event.type) {
+    case "TEXT_MESSAGE_CONTENT":
+      process.stdout.write(event.delta);
+      break;
+    case "TOOL_CALL_RESULT":
+      console.log("Tool result:", event.result);
+      break;
+    case "RUN_FINISHED":
+      console.log("Done");
+      break;
+  }
+}
+```
+
+The `stream` object also exposes `runId` and a `result` promise for the final run result.
+
+### onEvent callback
+
+Use `onEvent` on run options when you don't need the full stream handle.
+
+```ts
+await app.run("assistant", {
+  input: "Summarize this document...",
+  onEvent: (event) => {
+    if (event.type === "STEP_FINISH") {
+      console.log(`Step ${event.stepIndex + 1} done`);
+    }
+  },
+});
+```
+
+## Run Lifecycle Events
+
+These events mark the boundaries of a run.
+
+| Event | Key Fields | Description |
+| --- | --- | --- |
+| `RUN_STARTED` | `runId`, `agentName`, `conversationId?`, `runInput` | Run began. |
+| `RUN_FINISHED` | `runId`, `agentName`, `finishReason` | Run completed. |
+| `STEP_FINISH` | `stepIndex`, `terminationReason?` | One model step completed. |
+
+## Content and Tool Events
+
+These events carry the content being produced and the tool calls happening during a step.
+
+| Event | Description |
+| --- | --- |
+| `TEXT_MESSAGE_CONTENT` | Streaming text delta from the model. |
+| `TOOL_CALL_START` | The model began a tool call. |
+| `TOOL_CALL_RESULT` | A tool returned a result. |
+| `TOOL_APPROVAL_REQUIRED` | A human-in-the-loop approval is needed before the tool runs. |
+| `TOOL_APPROVAL_UPDATED` | An approval decision was made (or expired). |

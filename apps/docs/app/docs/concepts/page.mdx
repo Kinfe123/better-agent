@@ -1,0 +1,15 @@
+---
+title: "Concepts"
+description: "Core ideas and mental models that explain how Better Agent works."
+order: 4
+---
+
+# Concepts
+
+This section covers the building blocks of Better Agent. Each page focuses on one primitive or subsystem.
+
+Start with [Agent](/docs/concepts/agent) — the core unit that brings together a model, instructions, tools, and context into one typed definition. Then read [API](/docs/concepts/api) to see how an app exposes agents over HTTP, and [Client](/docs/concepts/client) to understand how the typed client consumes it.
+
+[Tools](/docs/concepts/tools) explains how to let agents take structured actions on the server or the client. [Events](/docs/concepts/events) covers the streaming event model. [Providers](/docs/concepts/providers) shows how to connect to model APIs. [Persistence](/docs/concepts/persistence) covers durable conversations and stream resumption.
+
+For less common but important features: [Structured Output](/docs/concepts/structured-output) returns typed JSON from a run, [Human in the Loop](/docs/concepts/hil) pauses execution for human approval, [MCP](/docs/concepts/mcp) connects agents to external tools via the Model Context Protocol, [Plugins](/docs/concepts/plugins) adds cross-agent behavior, [TypeScript](/docs/concepts/typescript) explains the end-to-end type inference model, [CLI](/docs/concepts/cli) generates portable client types, and [Errors](/docs/concepts/errors) documents the error shape and recovery patterns.

@@ -1,0 +1,21 @@
+---
+title: "Plugins"
+description: "Pre-built plugins for auth, rate limiting, logging, IP allowlisting, and sandboxed code execution."
+order: 19
+---
+
+# Plugins
+
+Better Agent ships a set of pre-built plugins in `@better-agent/plugins`. Register them in your app's `plugins` array and they apply to every agent automatically.
+
+[Auth](/docs/plugins/auth) blocks requests unless they carry a valid API key. It supports static key lists, custom headers, and fully custom validation logic.
+
+Rate Limit limits requests per agent using a sliding window counter, with optional per-user buckets and shared storage for multi-instance deployments.
+
+Logging emits structured logs for requests, model calls, tool calls, events, and errors. Sensitive headers are redacted by default, and you can forward entries to any logging system.
+
+IP Allowlist restricts access to exact IPs or CIDR ranges, with proxy-aware IP resolution via `x-forwarded-for`.
+
+Sandbox gives agents a real execution environment — shell commands, file I/O, and preview ports — backed by E2B or Daytona.
+
+To build your own plugin, see [Plugins concept](/docs/concepts/plugins).

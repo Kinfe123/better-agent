@@ -1,0 +1,30 @@
+---
+title: "Introduction"
+description: "Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps."
+order: 1
+---
+
+# Introduction
+
+Better Agent is a TypeScript framework for building typed, event-driven, framework-agnostic agent apps. It gives you end-to-end type safety from agent definitions on the server to client calls in the browser, without locking you into a fixed runtime or platform.
+
+## Why It Exists
+
+Most agent frameworks ask you to adopt their infrastructure. Better Agent fits into yours. There are four concrete reasons it exists:
+
+1. Agent apps should be typed end-to-end, from definitions to client calls.
+2. The framework should fit into your existing stack, including your application, database, and auth.
+3. Reusable behavior should be easy to package and share as plugins.
+4. Durable conversations and resumable runs should be easy to build with first-class persistence support.
+
+## What You Get
+
+Define an agent once and everything — its model, tools, context schema, and output schema — is typed together. The client infers agent names, context shapes, and structured output directly from your server definition with no manual sync required.
+
+Better Agent supports multiple model providers (OpenAI, Anthropic, xAI) with the same app shape. The same plugin system adds guards, lifecycle hooks, middleware, and custom endpoints without rewriting the core loop. Framework adapters let you mount the HTTP handler in the server you already use, and UI adapters for React, Vue, Svelte, Solid, and Preact handle the streaming chat state.
+
+When you need runs that survive disconnects or resume after a network drop, the persistence layer gives you three small store contracts to implement on top of your existing database.
+
+## Where To Go Next
+
+Head to [Installation](/docs/get-started/installation) to add the packages, then [Usage](/docs/get-started/usage) to build a working app. When you're ready to go deeper, [Concepts](/docs/concepts) covers every building block in detail.
